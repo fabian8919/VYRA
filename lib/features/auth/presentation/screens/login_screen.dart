@@ -38,11 +38,9 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
       );
       
-      // Mostrar mensaje de éxito antes de navegar
       if (mounted) {
         _showSuccessSnackBar('¡Bienvenido de vuelta!');
       }
-      // El AuthWrapper automáticamente redirige al Home
     } catch (e) {
       if (mounted) {
         _showErrorSnackBar(e.toString());
@@ -114,217 +112,227 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.height < 700;
+    
     return Scaffold(
       body: Container(
+        width: double.infinity,
+        height: size.height,
         decoration: const BoxDecoration(
           gradient: AppTheme.primaryGradient,
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 40),
-                
-                // Logo y nombre
-                Row(
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(18),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withAlpha(77),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'V',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryBlue,
-                          ),
+            physics: const ClampingScrollPhysics(),
+            child: Container(
+              constraints: BoxConstraints(
+                minHeight: size.height - 
+                    MediaQuery.of(context).padding.top - 
+                    MediaQuery.of(context).padding.bottom,
+              ),
+              padding: EdgeInsets.all(isSmallScreen ? 20 : 28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(height: isSmallScreen ? 20 : 40),
+                  
+                  // Logo
+                  Row(
+                    children: [
+                      Container(
+                        width: isSmallScreen ? 50 : 60,
+                        height: isSmallScreen ? 50 : 60,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(isSmallScreen ? 15 : 18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.white.withAlpha(77),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    const Text(
-                      'Vyra',
-                      style: TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: 60),
-                
-                // Título
-                const Text(
-                  'Bienvenido\nde vuelta',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: -0.5,
-                    height: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Inicia sesión para continuar',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withAlpha(204),
-                  ),
-                ),
-                
-                const SizedBox(height: 40),
-                
-                // Card blanca con formulario
-                Container(
-                  padding: const EdgeInsets.all(28),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(28),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryDark.withAlpha(51),
-                        blurRadius: 30,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        // Email
-                        CustomTextField(
-                          hintText: 'Correo electrónico',
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                          prefixIcon: const Icon(
-                            Icons.email_outlined,
-                            color: AppTheme.primaryBlue,
-                            size: 22,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Ingresa tu correo electrónico';
-                            }
-                            if (!value.contains('@')) {
-                              return 'Ingresa un correo válido';
-                            }
-                            return null;
-                          },
-                        ),
-                        
-                        const SizedBox(height: 16),
-                        
-                        // Contraseña
-                        PasswordField(
-                          hintText: 'Contraseña',
-                          controller: _passwordController,
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (_) => _login(),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Ingresa tu contraseña';
-                            }
-                            if (value.length < 6) {
-                              return 'La contraseña debe tener al menos 6 caracteres';
-                            }
-                            return null;
-                          },
-                        ),
-                        
-                        const SizedBox(height: 12),
-                        
-                        // Olvidé contraseña
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const ForgotPasswordScreen(),
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              '¿Olvidaste tu contraseña?',
-                              style: TextStyle(
-                                color: AppTheme.primaryBlue,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                              ),
+                        child: Center(
+                          child: Text(
+                            'V',
+                            style: TextStyle(
+                              fontSize: isSmallScreen ? 28 : 32,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryBlue,
                             ),
                           ),
                         ),
-                        
-                        const SizedBox(height: 24),
-                        
-                        // Botón de login
-                        GradientButton(
-                          text: 'Iniciar sesión',
-                          onPressed: _login,
-                          isLoading: _isLoading,
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        'Vyra',
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 30 : 36,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  SizedBox(height: isSmallScreen ? 16 : 20),
+                  
+                  // Tagline
+                  Text(
+                    'Descubre.\nInspírate.\nComparte.',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 26 : 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                      height: 1.15,
+                    ),
+                  ),
+                  SizedBox(height: isSmallScreen ? 8 : 12),
+                  Text(
+                    'Explora imágenes increíbles.',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 15,
+                      color: Colors.white.withAlpha(204),
+                      height: 1.5,
+                    ),
+                  ),
+                  
+                  SizedBox(height: isSmallScreen ? 16 : 20),
+                  
+                  // Card con formulario
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.primaryDark.withAlpha(51),
+                          blurRadius: 30,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          CustomTextField(
+                            hintText: 'Correo electrónico',
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            prefixIcon: const Icon(
+                              Icons.email_outlined,
+                              color: AppTheme.primaryBlue,
+                              size: 22,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Ingresa tu correo';
+                              }
+                              if (!value.contains('@')) {
+                                return 'Correo inválido';
+                              }
+                              return null;
+                            },
+                          ),
+                          
+                          const SizedBox(height: 12),
+                          
+                          PasswordField(
+                            hintText: 'Contraseña',
+                            controller: _passwordController,
+                            textInputAction: TextInputAction.done,
+                            onSubmitted: (_) => _login(),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Ingresa tu contraseña';
+                              }
+                              if (value.length < 6) {
+                                return 'Mínimo 6 caracteres';
+                              }
+                              return null;
+                            },
+                          ),
+                          
+                          const SizedBox(height: 8),
+                          
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const ForgotPasswordScreen(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                '¿Olvidaste tu contraseña?',
+                                style: TextStyle(
+                                  color: AppTheme.primaryBlue,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ),
+                          
+                          const SizedBox(height: 16),
+                          
+                          GradientButton(
+                            text: 'Entrar',
+                            onPressed: _login,
+                            isLoading: _isLoading,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  
+                  SizedBox(height: isSmallScreen ? 12 : 16),
+                  
+                  Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '¿No tienes cuenta? ',
+                          style: TextStyle(
+                            color: Colors.white.withAlpha(204),
+                            fontSize: isSmallScreen ? 13 : 14,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const RegisterScreen(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'Únete ahora',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: isSmallScreen ? 13 : 14,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-                
-                const SizedBox(height: 32),
-                
-                // Registro
-                Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '¿No tienes una cuenta? ',
-                        style: TextStyle(
-                          color: Colors.white.withAlpha(204),
-                          fontSize: 15,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const RegisterScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          'Regístrate',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                const SizedBox(height: 20),
-              ],
+                  
+                  SizedBox(height: isSmallScreen ? 16 : 20),
+                ],
+              ),
             ),
           ),
         ),

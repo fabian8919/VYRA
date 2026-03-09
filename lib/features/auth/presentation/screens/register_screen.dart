@@ -34,7 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
     
     if (!_acceptTerms) {
-      _showErrorSnackBar('Debes aceptar los términos y condiciones');
+      _showErrorSnackBar('Acepta los términos para continuar');
       return;
     }
 
@@ -47,7 +47,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         name: _nameController.text.trim(),
       );
       
-      // Mostrar mensaje de éxito
       if (mounted) {
         _showSuccessDialog();
       }
@@ -84,7 +83,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Icono de éxito con animación
               Container(
                 width: 80,
                 height: 80,
@@ -107,7 +105,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 24),
               const Text(
-                '¡Cuenta creada!',
+                '¡Bienvenido a Vyra!',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -116,7 +114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Tu cuenta ha sido creada exitosamente. Ahora puedes iniciar sesión.',
+                'Tu cuenta está lista. Comienza a descubrir imágenes increíbles.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
@@ -125,7 +123,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 28),
-              // Botón para ir al login
               Container(
                 width: double.infinity,
                 height: 52,
@@ -144,13 +141,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () {
-                      Navigator.of(context).pop(); // Cerrar diálogo
-                      Navigator.of(context).pop(); // Volver al login
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
                     },
                     borderRadius: BorderRadius.circular(16),
                     child: const Center(
                       child: Text(
-                        'Iniciar sesión',
+                        'Comenzar',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -191,6 +188,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.height < 700;
+    
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -198,18 +198,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(28),
+            padding: EdgeInsets.all(isSmallScreen ? 20 : 28),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
+                SizedBox(height: isSmallScreen ? 12 : 20),
                 
-                // Botón regresar
                 GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
                   child: Container(
-                    width: 44,
-                    height: 44,
+                    width: isSmallScreen ? 40 : 44,
+                    height: isSmallScreen ? 40 : 44,
                     decoration: BoxDecoration(
                       color: Colors.white.withAlpha(26),
                       borderRadius: BorderRadius.circular(12),
@@ -226,31 +225,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 
-                const SizedBox(height: 32),
+                SizedBox(height: isSmallScreen ? 24 : 32),
                 
-                // Título
-                const Text(
-                  'Crear\ncuenta',
+                Text(
+                  'Crea tu\ncuenta',
                   style: TextStyle(
-                    fontSize: 36,
+                    fontSize: isSmallScreen ? 30 : 36,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                     letterSpacing: -0.5,
                     height: 1.2,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: isSmallScreen ? 8 : 12),
                 Text(
-                  'Únete a Vyra y comienza tu experiencia',
+                  'Únete a la comunidad de creadores visuales.',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: isSmallScreen ? 14 : 16,
                     color: Colors.white.withAlpha(204),
                   ),
                 ),
                 
-                const SizedBox(height: 32),
+                SizedBox(height: isSmallScreen ? 24 : 32),
                 
-                // Card blanca con formulario
                 Container(
                   padding: const EdgeInsets.all(28),
                   decoration: BoxDecoration(
@@ -268,9 +265,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        // Nombre
                         CustomTextField(
-                          hintText: 'Nombre completo',
+                          hintText: 'Nombre de usuario',
                           controller: _nameController,
                           keyboardType: TextInputType.name,
                           textInputAction: TextInputAction.next,
@@ -284,7 +280,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               return 'Ingresa tu nombre';
                             }
                             if (value.length < 2) {
-                              return 'El nombre es demasiado corto';
+                              return 'Nombre muy corto';
                             }
                             return null;
                           },
@@ -292,7 +288,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         
                         const SizedBox(height: 16),
                         
-                        // Email
                         CustomTextField(
                           hintText: 'Correo electrónico',
                           controller: _emailController,
@@ -305,10 +300,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Ingresa tu correo electrónico';
+                              return 'Ingresa tu correo';
                             }
                             if (!value.contains('@')) {
-                              return 'Ingresa un correo válido';
+                              return 'Correo inválido';
                             }
                             return null;
                           },
@@ -316,17 +311,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         
                         const SizedBox(height: 16),
                         
-                        // Contraseña
                         PasswordField(
                           hintText: 'Contraseña',
                           controller: _passwordController,
                           textInputAction: TextInputAction.next,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Ingresa una contraseña';
+                              return 'Ingresa contraseña';
                             }
                             if (value.length < 6) {
-                              return 'La contraseña debe tener al menos 6 caracteres';
+                              return 'Mínimo 6 caracteres';
                             }
                             return null;
                           },
@@ -334,7 +328,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         
                         const SizedBox(height: 16),
                         
-                        // Confirmar contraseña
                         PasswordField(
                           hintText: 'Confirmar contraseña',
                           controller: _confirmPasswordController,
@@ -342,10 +335,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onSubmitted: (_) => _register(),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Confirma tu contraseña';
+                              return 'Confirma contraseña';
                             }
                             if (value != _passwordController.text) {
-                              return 'Las contraseñas no coinciden';
+                              return 'No coinciden';
                             }
                             return null;
                           },
@@ -353,7 +346,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         
                         const SizedBox(height: 20),
                         
-                        // Términos y condiciones
                         Row(
                           children: [
                             GestureDetector(
@@ -425,7 +417,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         
                         const SizedBox(height: 28),
                         
-                        // Botón de registro
                         GradientButton(
                           text: 'Crear cuenta',
                           onPressed: _register,
@@ -436,28 +427,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 
-                const SizedBox(height: 24),
+                SizedBox(height: isSmallScreen ? 16 : 24),
                 
-                // Login
                 Center(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '¿Ya tienes una cuenta? ',
+                        '¿Ya tienes cuenta? ',
                         style: TextStyle(
                           color: Colors.white.withAlpha(204),
-                          fontSize: 15,
+                          fontSize: isSmallScreen ? 14 : 15,
                         ),
                       ),
                       GestureDetector(
                         onTap: () => Navigator.of(context).pop(),
-                        child: const Text(
-                          'Inicia sesión',
+                        child: Text(
+                          'Entrar',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w700,
-                            fontSize: 15,
+                            fontSize: isSmallScreen ? 14 : 15,
                           ),
                         ),
                       ),
@@ -465,7 +455,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 
-                const SizedBox(height: 20),
+                SizedBox(height: isSmallScreen ? 16 : 20),
               ],
             ),
           ),

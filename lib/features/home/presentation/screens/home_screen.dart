@@ -3,256 +3,390 @@ import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/features/auth/presentation/screens/login_screen.dart';
 import 'package:vyra/services/auth_service.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final user = AuthService().currentUser;
-    final userName = user?.userMetadata?['full_name'] as String? ?? 
-                     user?.email?.split('@').first ?? 
-                     'Usuario';
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
+class _HomeScreenState extends State<HomeScreen> {
+  final PageController _pageController = PageController();
+  
+  // Datos de ejemplo - reemplazar con datos reales de Supabase
+  final List<Map<String, dynamic>> _posts = [
+    {
+      'image': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+      'username': '@mountain_lover',
+      'caption': 'Amanecer en los Alpes 🏔️✨',
+      'likes': 1243,
+      'avatar': 'M',
+    },
+    {
+      'image': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800',
+      'username': '@ocean_dreams',
+      'caption': 'El mar siempre me encuentra 🌊',
+      'likes': 892,
+      'avatar': 'O',
+    },
+    {
+      'image': 'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=800',
+      'username': '@architecture',
+      'caption': 'Líneas y curvas modernas 🏢',
+      'likes': 2156,
+      'avatar': 'A',
+    },
+    {
+      'image': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800',
+      'username': '@portrait_artist',
+      'caption': 'Luces naturales 💫',
+      'likes': 3421,
+      'avatar': 'P',
+    },
+  ];
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _logout() async {
+    await AuthService().signOut();
+    if (mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        (route) => false,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.height < 700;
+    
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppTheme.primaryGradient,
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                
-                // Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hola,',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white.withAlpha(204),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          userName.split(' ').first,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    
-                    // Avatar
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withAlpha(77),
-                            blurRadius: 15,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Text(
-                          userName.isNotEmpty
-                              ? userName[0].toUpperCase()
-                              : 'U',
-                          style: const TextStyle(
-                            color: AppTheme.primaryBlue,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // Feed vertical tipo TikTok
+          PageView.builder(
+            controller: _pageController,
+            scrollDirection: Axis.vertical,
+            onPageChanged: (index) {},
+            itemCount: _posts.length,
+            itemBuilder: (context, index) {
+              return _buildPostItem(_posts[index], isSmallScreen);
+            },
+          ),
+          
+          // Top bar
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: EdgeInsets.only(
+                top: isSmallScreen ? 40 : 50,
+                left: 20,
+                right: 20,
+                bottom: 20,
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withAlpha(153),
+                    Colors.transparent,
                   ],
                 ),
-                
-                const SizedBox(height: 40),
-                
-                // Welcome card
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(28),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(28),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryDark.withAlpha(51),
-                        blurRadius: 30,
-                        offset: const Offset(0, 15),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          gradient: AppTheme.buttonGradient,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppTheme.primaryBlue.withAlpha(77),
-                              blurRadius: 15,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.rocket_launch_outlined,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        '¡Bienvenido a Vyra!',
-                        style: TextStyle(
-                          color: AppTheme.textPrimary,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Tu aplicación está lista para usarse. Explora todas las funcionalidades que tenemos para ti.',
-                        style: TextStyle(
-                          color: AppTheme.textSecondary,
-                          fontSize: 15,
-                          height: 1.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                const SizedBox(height: 24),
-                
-                // Info de usuario card
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withAlpha(26),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.white.withAlpha(51),
-                      width: 1,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Vyra',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -0.5,
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.email_outlined,
-                            color: Colors.white.withAlpha(204),
-                            size: 20,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Correo electrónico',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white.withAlpha(204),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        user?.email ?? 'Sin correo',
-                        style: const TextStyle(
-                          fontSize: 16,
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.search,
                           color: Colors.white,
-                          fontWeight: FontWeight.w500,
+                          size: 28,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: _logout,
+                        icon: const Icon(
+                          Icons.logout,
+                          color: Colors.white,
+                          size: 24,
                         ),
                       ),
                     ],
                   ),
+                ],
+              ),
+            ),
+          ),
+          
+          // Bottom navigation
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: EdgeInsets.only(
+                bottom: isSmallScreen ? 20 : 30,
+                top: isSmallScreen ? 16 : 20,
+                left: 20,
+                right: 20,
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    Colors.black.withAlpha(179),
+                    Colors.transparent,
+                  ],
                 ),
-                
-                const Spacer(),
-                
-                // Logout button
-                Container(
-                  width: double.infinity,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryDark.withAlpha(51),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () async {
-                        await AuthService().signOut();
-                        if (context.mounted) {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                              builder: (_) => const LoginScreen(),
-                            ),
-                            (route) => false,
-                          );
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(16),
-                      child: Center(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.logout,
-                              color: AppTheme.primaryBlue,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              'Cerrar sesión',
-                              style: TextStyle(
-                                color: AppTheme.textPrimary,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(Icons.home, 'Inicio', true),
+                  _buildNavItem(Icons.explore, 'Descubrir', false),
+                  _buildAddButton(),
+                  _buildNavItem(Icons.favorite, 'Me gusta', false),
+                  _buildNavItem(Icons.person, 'Perfil', false),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPostItem(Map<String, dynamic> post, bool isSmallScreen) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // Imagen de fondo
+        Image.network(
+          post['image'],
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              color: Colors.grey[900],
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: AppTheme.primaryBlue,
                 ),
+              ),
+            );
+          },
+        ),
+        
+        // Overlay gradient
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [
+                Colors.black.withAlpha(204),
+                Colors.transparent,
+                Colors.transparent,
               ],
+              stops: const [0.0, 0.3, 1.0],
             ),
           ),
         ),
+        
+        // Info del post (lado derecho)
+        Positioned(
+          right: isSmallScreen ? 12 : 16,
+          bottom: isSmallScreen ? 100 : 120,
+          child: Column(
+            children: [
+              // Avatar
+              Container(
+                width: isSmallScreen ? 48 : 56,
+                height: isSmallScreen ? 48 : 56,
+                decoration: BoxDecoration(
+                  gradient: AppTheme.buttonGradient,
+                  borderRadius: BorderRadius.circular(isSmallScreen ? 24 : 28),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    post['avatar'],
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: isSmallScreen ? 20 : 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: isSmallScreen ? 16 : 20),
+              
+              // Like
+              _buildActionButton(
+                Icons.favorite,
+                post['likes'].toString(),
+                () {},
+                isSmallScreen,
+              ),
+              SizedBox(height: isSmallScreen ? 12 : 16),
+              
+              // Comment
+              _buildActionButton(
+                Icons.chat_bubble,
+                '128',
+                () {},
+                isSmallScreen,
+              ),
+              SizedBox(height: isSmallScreen ? 12 : 16),
+              
+              // Share
+              _buildActionButton(
+                Icons.share,
+                'Share',
+                () {},
+                isSmallScreen,
+              ),
+            ],
+          ),
+        ),
+        
+        // Info del usuario (abajo izquierda)
+        Positioned(
+          left: 20,
+          right: isSmallScreen ? 80 : 100,
+          bottom: isSmallScreen ? 100 : 120,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                post['username'],
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: isSmallScreen ? 16 : 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: isSmallScreen ? 6 : 8),
+              Text(
+                post['caption'],
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: isSmallScreen ? 14 : 16,
+                ),
+              ),
+              SizedBox(height: isSmallScreen ? 10 : 12),
+              Row(
+                children: [
+                  Icon(
+                    Icons.music_note,
+                    color: Colors.white,
+                    size: isSmallScreen ? 14 : 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Sonido original - ${post['username'].toString().substring(1)}',
+                    style: TextStyle(
+                      color: Colors.white.withAlpha(204),
+                      fontSize: isSmallScreen ? 12 : 14,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButton(IconData icon, String label, VoidCallback onTap, bool isSmallScreen) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            color: Colors.white,
+            size: isSmallScreen ? 28 : 32,
+          ),
+          SizedBox(height: isSmallScreen ? 2 : 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: isSmallScreen ? 11 : 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, bool isSelected) {
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.height < 700;
+    
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          color: isSelected ? AppTheme.primaryBlue : Colors.white.withAlpha(153),
+          size: isSmallScreen ? 24 : 28,
+        ),
+        SizedBox(height: isSmallScreen ? 2 : 4),
+        Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? AppTheme.primaryBlue : Colors.white.withAlpha(153),
+            fontSize: isSmallScreen ? 10 : 12,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAddButton() {
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.height < 700;
+    
+    return Container(
+      width: isSmallScreen ? 40 : 48,
+      height: isSmallScreen ? 32 : 36,
+      decoration: BoxDecoration(
+        gradient: AppTheme.buttonGradient,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(
+        Icons.add,
+        color: Colors.white,
+        size: isSmallScreen ? 24 : 28,
       ),
     );
   }

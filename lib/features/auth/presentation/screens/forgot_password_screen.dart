@@ -68,106 +68,117 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.height < 700;
+    
     return Scaffold(
       body: Container(
+        width: double.infinity,
+        height: size.height,
         decoration: const BoxDecoration(
           gradient: AppTheme.primaryGradient,
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                
-                // Botón regresar
-                GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withAlpha(26),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.white.withAlpha(51),
-                        width: 1,
+            physics: const ClampingScrollPhysics(),
+            child: Container(
+              constraints: BoxConstraints(
+                minHeight: size.height - 
+                    MediaQuery.of(context).padding.top - 
+                    MediaQuery.of(context).padding.bottom,
+              ),
+              padding: EdgeInsets.all(isSmallScreen ? 20 : 28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: isSmallScreen ? 12 : 20),
+                  
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Container(
+                      width: isSmallScreen ? 40 : 44,
+                      height: isSmallScreen ? 40 : 44,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withAlpha(26),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.white.withAlpha(51),
+                          width: 1,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new,
+                        color: Colors.white,
+                        size: 18,
                       ),
                     ),
-                    child: const Icon(
-                      Icons.arrow_back_ios_new,
+                  ),
+                  
+                  SizedBox(height: isSmallScreen ? 24 : 40),
+                  
+                  Text(
+                    'Recuperar\ncontraseña',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 30 : 36,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      size: 18,
+                      letterSpacing: -0.5,
+                      height: 1.2,
                     ),
                   ),
-                ),
-                
-                const SizedBox(height: 40),
-                
-                // Título
-                const Text(
-                  'Recuperar\ncontraseña',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: -0.5,
-                    height: 1.2,
+                  SizedBox(height: isSmallScreen ? 8 : 12),
+                  Text(
+                    _emailSent 
+                      ? 'Revisa tu correo para continuar'
+                      : 'Te enviaremos un enlace para restablecer tu contraseña',
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                      color: Colors.white.withAlpha(204),
+                      height: 1.5,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  _emailSent 
-                    ? 'Revisa tu correo para continuar'
-                    : 'Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withAlpha(204),
-                    height: 1.5,
+                  
+                  SizedBox(height: isSmallScreen ? 24 : 40),
+                  
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(28),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.primaryDark.withAlpha(51),
+                          blurRadius: 30,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: _emailSent 
+                      ? _buildSuccessContent(isSmallScreen)
+                      : _buildFormContent(isSmallScreen),
                   ),
-                ),
-                
-                const SizedBox(height: 40),
-                
-                // Card blanca con formulario o mensaje de éxito
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(28),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(28),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryDark.withAlpha(51),
-                        blurRadius: 30,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: _emailSent 
-                    ? _buildSuccessContent()
-                    : _buildFormContent(),
-                ),
-                
-                const SizedBox(height: 32),
-                
-                // Volver al login
-                if (_emailSent)
-                  Center(
-                    child: GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: const Text(
-                        'Volver al inicio de sesión',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
+                  
+                  SizedBox(height: isSmallScreen ? 24 : 32),
+                  
+                  if (_emailSent)
+                    Center(
+                      child: GestureDetector(
+                        onTap: () => Navigator.of(context).pop(),
+                        child: Text(
+                          'Volver al inicio',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: isSmallScreen ? 14 : 15,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
+                  
+                  SizedBox(height: isSmallScreen ? 16 : 20),
+                ],
+              ),
             ),
           ),
         ),
@@ -175,29 +186,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  Widget _buildFormContent() {
+  Widget _buildFormContent(bool isSmallScreen) {
     return Form(
       key: _formKey,
       child: Column(
         children: [
-          // Icono
           Container(
-            width: 80,
-            height: 80,
+            width: isSmallScreen ? 70 : 80,
+            height: isSmallScreen ? 70 : 80,
             decoration: BoxDecoration(
               color: AppTheme.lightBlue,
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(isSmallScreen ? 20 : 24),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.lock_reset_outlined,
               color: AppTheme.primaryBlue,
-              size: 40,
+              size: isSmallScreen ? 35 : 40,
             ),
           ),
           
-          const SizedBox(height: 24),
+          SizedBox(height: isSmallScreen ? 20 : 24),
           
-          // Email
           CustomTextField(
             hintText: 'Correo electrónico',
             controller: _emailController,
@@ -211,18 +220,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Ingresa tu correo electrónico';
+                return 'Ingresa tu correo';
               }
               if (!value.contains('@')) {
-                return 'Ingresa un correo válido';
+                return 'Correo inválido';
               }
               return null;
             },
           ),
           
-          const SizedBox(height: 28),
+          SizedBox(height: isSmallScreen ? 24 : 28),
           
-          // Botón enviar
           GradientButton(
             text: 'Enviar enlace',
             onPressed: _sendResetEmail,
@@ -233,16 +241,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  Widget _buildSuccessContent() {
+  Widget _buildSuccessContent(bool isSmallScreen) {
     return Column(
       children: [
-        // Icono de éxito
         Container(
-          width: 100,
-          height: 100,
+          width: isSmallScreen ? 90 : 100,
+          height: isSmallScreen ? 90 : 100,
           decoration: BoxDecoration(
             gradient: AppTheme.buttonGradient,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(isSmallScreen ? 24 : 28),
             boxShadow: [
               BoxShadow(
                 color: AppTheme.primaryBlue.withAlpha(77),
@@ -251,43 +258,42 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
             ],
           ),
-          child: const Icon(
+          child: Icon(
             Icons.mark_email_read_outlined,
             color: Colors.white,
-            size: 48,
+            size: isSmallScreen ? 42 : 48,
           ),
         ),
         
-        const SizedBox(height: 24),
+        SizedBox(height: isSmallScreen ? 20 : 24),
         
-        const Text(
+        Text(
           '¡Correo enviado!',
           style: TextStyle(
-            fontSize: 24,
+            fontSize: isSmallScreen ? 22 : 24,
             fontWeight: FontWeight.bold,
             color: AppTheme.textPrimary,
           ),
         ),
         
-        const SizedBox(height: 12),
+        SizedBox(height: isSmallScreen ? 10 : 12),
         
         Text(
-          'Hemos enviado un enlace de recuperación a:\n${_emailController.text}',
+          'Revisa ${_emailController.text}',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: isSmallScreen ? 14 : 15,
             color: AppTheme.textSecondary,
             height: 1.5,
           ),
         ),
         
-        const SizedBox(height: 24),
+        SizedBox(height: isSmallScreen ? 20 : 24),
         
-        // Botón reenviar
         TextButton.icon(
           onPressed: _isLoading ? null : _sendResetEmail,
           icon: _isLoading 
-            ? const SizedBox(
+            ? SizedBox(
                 width: 16,
                 height: 16,
                 child: CircularProgressIndicator(
@@ -297,7 +303,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               )
             : const Icon(Icons.refresh, size: 18),
           label: Text(
-            _isLoading ? 'Enviando...' : 'Reenviar correo',
+            _isLoading ? 'Enviando...' : 'Reenviar',
             style: const TextStyle(
               color: AppTheme.primaryBlue,
               fontWeight: FontWeight.w600,
