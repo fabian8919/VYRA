@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vyra/core/theme/app_theme.dart';
+import 'package:vyra/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:vyra/features/auth/presentation/screens/register_screen.dart';
 import 'package:vyra/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:vyra/features/auth/presentation/widgets/gradient_button.dart';
@@ -257,7 +258,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {
-                              // TODO: Implementar recuperación de contraseña
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const ForgotPasswordScreen(),
+                                ),
+                              );
                             },
                             child: const Text(
                               '¿Olvidaste tu contraseña?',
