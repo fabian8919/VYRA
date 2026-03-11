@@ -113,67 +113,23 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         
-        // Header flotante (sin gradiente, solo iconos)
+        // Header flotante - solo botón de perfil
         Positioned(
           top: MediaQuery.of(context).padding.top + 8,
-          left: 16,
-          right: 16,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      gradient: AppTheme.buttonGradient,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'V',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    'Vyra',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black54,
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const ProfileScreen(),
-                    ),
-                  );
-                },
-                icon: const Icon(
-                  Icons.person_outline,
-                  color: Colors.white,
-                  size: 28,
+          right: 8,
+          child: IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const ProfileScreen(),
                 ),
-              ),
-            ],
+              );
+            },
+            icon: const Icon(
+              Icons.person_outline,
+              color: Colors.white,
+              size: 28,
+            ),
           ),
         ),
         
@@ -257,46 +213,46 @@ class _HomeScreenState extends State<HomeScreen> {
                   
                   const SizedBox(height: 16),
                   
-                  // Botones de acción
+                  // Botones de acción alineados a la derecha
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      // Upvote/Downvote
+                      // Corazón con contador
                       Container(
                         decoration: BoxDecoration(
                           color: const Color(0xFF3A3A3A).withAlpha(204),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.arrow_upward,
-                                color: Colors.white,
-                                size: 20,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {},
+                            borderRadius: BorderRadius.circular(20),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 10,
                               ),
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              constraints: const BoxConstraints(),
-                            ),
-                            Text(
-                              _formatNumber(post['likes']),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.favorite,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _formatNumber(post['likes']),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.arrow_downward,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              constraints: const BoxConstraints(),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                       
@@ -343,26 +299,80 @@ class _HomeScreenState extends State<HomeScreen> {
                       
                       const SizedBox(width: 10),
                       
-                      // Compartir
+                      // Menú de tres puntos
                       Container(
                         decoration: BoxDecoration(
                           color: const Color(0xFF3A3A3A).withAlpha(204),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {},
-                            borderRadius: BorderRadius.circular(20),
-                            child: const Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Icon(
-                                Icons.share,
-                                color: Colors.white,
-                                size: 18,
+                        child: PopupMenuButton<String>(
+                          icon: const Icon(
+                            Icons.more_horiz,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          color: const Color(0xFF2A2A2A),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          onSelected: (value) {
+                            switch (value) {
+                              case 'download':
+                                // Descargar imagen
+                                break;
+                              case 'share':
+                                // Compartir
+                                break;
+                              case 'not_interested':
+                                // No me interesa
+                                break;
+                              case 'report':
+                                // Reportar
+                                break;
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'download',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.download, color: Colors.white, size: 20),
+                                  SizedBox(width: 12),
+                                  Text('Descargar', style: TextStyle(color: Colors.white)),
+                                ],
                               ),
                             ),
-                          ),
+                            const PopupMenuItem(
+                              value: 'share',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.share, color: Colors.white, size: 20),
+                                  SizedBox(width: 12),
+                                  Text('Compartir', style: TextStyle(color: Colors.white)),
+                                ],
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'not_interested',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.not_interested, color: Colors.white, size: 20),
+                                  SizedBox(width: 12),
+                                  Text('No me interesa', style: TextStyle(color: Colors.white)),
+                                ],
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'report',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.flag_outlined, color: Colors.red, size: 20),
+                                  SizedBox(width: 12),
+                                  Text('Reportar', style: TextStyle(color: Colors.red)),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
