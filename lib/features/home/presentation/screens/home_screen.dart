@@ -12,6 +12,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   
+  // Estado de seguimiento para cada usuario (simulado)
+  final Set<String> _followingUsers = {};
+  
   // Datos de ejemplo de posts
   final List<Map<String, dynamic>> _posts = [
     {
@@ -66,6 +69,16 @@ class _HomeScreenState extends State<HomeScreen> {
       return '${(number / 1000).toStringAsFixed(1)}K';
     }
     return number.toString();
+  }
+
+  void _toggleFollow(String username) {
+    setState(() {
+      if (_followingUsers.contains(username)) {
+        _followingUsers.remove(username);
+      } else {
+        _followingUsers.add(username);
+      }
+    });
   }
 
   @override
@@ -157,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Usuario
+                  // Usuario con botón Seguir (estilo Instagram)
                   Row(
                     children: [
                       Container(
@@ -183,16 +196,30 @@ class _HomeScreenState extends State<HomeScreen> {
                         post['username'],
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 15,
+                          fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        '• ${post['timeAgo']}',
-                        style: TextStyle(
-                          color: Colors.white.withAlpha(150),
-                          fontSize: 13,
+                      const SizedBox(width: 8),
+                      // Botón Seguir estilo Instagram Reels
+                      GestureDetector(
+                        onTap: () => _toggleFollow(post['username']),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.white.withAlpha(180), width: 1),
+                          ),
+                          child: Text(
+                            _followingUsers.contains(post['username']) ? 'Siguiendo' : 'Seguir',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -205,9 +232,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     post['title'],
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      height: 1.4,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      height: 1.3,
                     ),
                   ),
                   
@@ -217,99 +244,81 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      // Corazón con contador
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF3A3A3A).withAlpha(204),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {},
-                            borderRadius: BorderRadius.circular(20),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 10,
+                      // Corazón con contador - estilo igual a Seguir
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.favorite,
+                                color: Colors.white,
+                                size: 22,
                               ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.favorite,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    _formatNumber(post['likes']),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
+                              const SizedBox(width: 6),
+                              Text(
+                                _formatNumber(post['likes']),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
                       ),
                       
                       const SizedBox(width: 10),
                       
-                      // Comentarios
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF3A3A3A).withAlpha(204),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {},
-                            borderRadius: BorderRadius.circular(20),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 10,
+                      // Comentarios - estilo igual a Seguir
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.chat_bubble_outline,
+                                color: Colors.white,
+                                size: 22,
                               ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.chat_bubble_outline,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    '${post['comments']}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
+                              const SizedBox(width: 6),
+                              Text(
+                                '${post['comments']}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
                       ),
                       
                       const SizedBox(width: 10),
                       
-                      // Menú de tres puntos
+                      // Menú de tres puntos - estilo igual a Seguir
                       Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFF3A3A3A).withAlpha(204),
-                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         child: PopupMenuButton<String>(
                           icon: const Icon(
                             Icons.more_horiz,
                             color: Colors.white,
-                            size: 20,
+                            size: 22,
                           ),
                           color: const Color(0xFF2A2A2A),
                           shape: RoundedRectangleBorder(
@@ -338,7 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Icon(Icons.download, color: Colors.white, size: 20),
                                   SizedBox(width: 12),
-                                  Text('Descargar', style: TextStyle(color: Colors.white)),
+                                  Text('Descargar', style: TextStyle(color: Colors.white, fontSize: 13)),
                                 ],
                               ),
                             ),
@@ -348,7 +357,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Icon(Icons.share, color: Colors.white, size: 20),
                                   SizedBox(width: 12),
-                                  Text('Compartir', style: TextStyle(color: Colors.white)),
+                                  Text('Compartir', style: TextStyle(color: Colors.white, fontSize: 13)),
                                 ],
                               ),
                             ),
@@ -358,7 +367,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Icon(Icons.not_interested, color: Colors.white, size: 20),
                                   SizedBox(width: 12),
-                                  Text('No me interesa', style: TextStyle(color: Colors.white)),
+                                  Text('No me interesa', style: TextStyle(color: Colors.white, fontSize: 13)),
                                 ],
                               ),
                             ),
@@ -368,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Icon(Icons.flag_outlined, color: Colors.red, size: 20),
                                   SizedBox(width: 12),
-                                  Text('Reportar', style: TextStyle(color: Colors.red)),
+                                  Text('Reportar', style: TextStyle(color: Colors.red, fontSize: 13)),
                                 ],
                               ),
                             ),
