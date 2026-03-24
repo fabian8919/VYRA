@@ -1,10 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:vyra/features/auth/presentation/screens/register_screen.dart';
-import 'package:vyra/features/auth/presentation/widgets/custom_text_field.dart';
-import 'package:vyra/features/auth/presentation/widgets/gradient_button.dart';
 import 'package:vyra/services/auth_service.dart';
+
+// Colores exactos de la imagen de referencia
+class _LoginColors {
+  // Fondo principal - lavanda muy claro
+  static const Color background = Color(0xFFF0F0FF);
+  
+  // Surface colors - lavanda claro para la tarjeta
+  static const Color surfaceContainer = Color(0xFFE8E8FF);
+  static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
+
+  // Primary colors
+  static const Color primary = Color(0xFF2563EB);
+  static const Color onSurface = Color(0xFF292B51);
+  static const Color onSurfaceVariant = Color(0xFF565881);
+  static const Color outline = Color(0xFF71739E);
+  static const Color outlineVariant = Color(0xFFC4C4E0);
+
+  // Gradient button - azul vibrante
+  static const LinearGradient vibrantBlue = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [
+      Color(0xFF1D4ED8),
+      Color(0xFF3B82F6),
+    ],
+  );
+}
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   final _authService = AuthService();
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -37,10 +62,6 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-      
-      if (mounted) {
-        _showSuccessSnackBar('¡Bienvenido de vuelta!');
-      }
     } catch (e) {
       if (mounted) {
         _showErrorSnackBar(e.toString());
@@ -50,44 +71,6 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() => _isLoading = false);
       }
     }
-  }
-
-  void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: const Icon(
-                Icons.check,
-                color: AppTheme.primaryBlue,
-                size: 16,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              message,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: AppTheme.primaryBlue,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 2),
-      ),
-    );
   }
 
   void _showErrorSnackBar(String message) {
@@ -100,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: Colors.red.shade400,
+        backgroundColor: const Color(0xFFB41340),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -112,161 +95,120 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isSmallScreen = size.height < 700;
-    
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: size.height,
-        decoration: const BoxDecoration(
-          gradient: AppTheme.primaryGradient,
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
-            child: Container(
-              constraints: BoxConstraints(
-                minHeight: size.height - 
-                    MediaQuery.of(context).padding.top - 
-                    MediaQuery.of(context).padding.bottom,
-              ),
-              padding: EdgeInsets.all(isSmallScreen ? 20 : 28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(height: isSmallScreen ? 20 : 40),
-                  
-                  // Logo
-                  Row(
-                    children: [
-                      Container(
-                        width: isSmallScreen ? 50 : 60,
-                        height: isSmallScreen ? 50 : 60,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(isSmallScreen ? 15 : 18),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.white.withAlpha(77),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            'V',
-                            style: TextStyle(
-                              fontSize: isSmallScreen ? 28 : 32,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.primaryBlue,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Text(
-                        'Vyra',
-                        style: TextStyle(
-                          fontSize: isSmallScreen ? 30 : 36,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: -0.5,
-                        ),
+      backgroundColor: _LoginColors.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+
+                // Logo circular con imagen de onda azul
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF004EDB).withAlpha(30),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
-                  
-                  SizedBox(height: isSmallScreen ? 16 : 20),
-                  
-                  // Tagline
-                  Text(
-                    'Descubre.\nInspírate.\nComparte.',
-                    style: TextStyle(
-                      fontSize: isSmallScreen ? 26 : 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: -0.5,
-                      height: 1.15,
-                    ),
-                  ),
-                  SizedBox(height: isSmallScreen ? 8 : 12),
-                  Text(
-                    'Explora imágenes increíbles.',
-                    style: TextStyle(
-                      fontSize: isSmallScreen ? 14 : 15,
-                      color: Colors.white.withAlpha(204),
-                      height: 1.5,
-                    ),
-                  ),
-                  
-                  SizedBox(height: isSmallScreen ? 16 : 20),
-                  
-                  // Card con formulario
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.primaryDark.withAlpha(51),
-                          blurRadius: 30,
-                          offset: const Offset(0, 10),
+                  child: ClipOval(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF1E3A8A),
+                            Color(0xFF3B82F6),
+                          ],
                         ),
-                      ],
+                      ),
+                      child: CustomPaint(
+                        size: const Size(100, 100),
+                        painter: WavePainter(),
+                      ),
                     ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          CustomTextField(
-                            hintText: 'Correo electrónico',
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            textInputAction: TextInputAction.next,
-                            prefixIcon: const Icon(
-                              Icons.email_outlined,
-                              color: AppTheme.primaryBlue,
-                              size: 22,
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Ingresa tu correo';
-                              }
-                              if (!value.contains('@')) {
-                                return 'Correo inválido';
-                              }
-                              return null;
-                            },
-                          ),
-                          
-                          const SizedBox(height: 12),
-                          
-                          PasswordField(
-                            hintText: 'Contraseña',
-                            controller: _passwordController,
-                            textInputAction: TextInputAction.done,
-                            onSubmitted: (_) => _login(),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Ingresa tu contraseña';
-                              }
-                              if (value.length < 6) {
-                                return 'Mínimo 6 caracteres';
-                              }
-                              return null;
-                            },
-                          ),
-                          
-                          const SizedBox(height: 8),
-                          
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // Nombre de la app - Vyra en azul cursiva
+                const Text(
+                  'Vyra',
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.w800,
+                    fontStyle: FontStyle.italic,
+                    color: _LoginColors.primary,
+                    letterSpacing: -1,
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Tagline
+                const Text(
+                  'Descubre. Inspírate. Comparte.',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: _LoginColors.onSurfaceVariant,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+
+                // Card del formulario
+                Container(
+                  padding: const EdgeInsets.all(28),
+                  decoration: BoxDecoration(
+                    color: _LoginColors.surfaceContainer,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Email label
+                        _buildLabel('CORREO ELECTRÓNICO'),
+                        const SizedBox(height: 10),
+                        // Email input
+                        _buildTextField(
+                          controller: _emailController,
+                          hintText: 'tu@ejemplo.com',
+                          keyboardType: TextInputType.emailAddress,
+                          prefixIcon: Icons.mail,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Ingresa tu correo';
+                            }
+                            if (!value.contains('@')) {
+                              return 'Correo inválido';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Password row con label y link
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildLabel('CONTRASEÑA'),
+                            GestureDetector(
+                              onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (_) => const ForgotPasswordScreen(),
@@ -276,67 +218,470 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: const Text(
                                 '¿Olvidaste tu contraseña?',
                                 style: TextStyle(
-                                  color: AppTheme.primaryBlue,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 13,
+                                  color: _LoginColors.primary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
-                          ),
-                          
-                          const SizedBox(height: 16),
-                          
-                          GradientButton(
-                            text: 'Entrar',
-                            onPressed: _login,
-                            isLoading: _isLoading,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  
-                  SizedBox(height: isSmallScreen ? 12 : 16),
-                  
-                  Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '¿No tienes cuenta? ',
-                          style: TextStyle(
-                            color: Colors.white.withAlpha(204),
-                            fontSize: isSmallScreen ? 13 : 14,
-                          ),
+                          ],
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const RegisterScreen(),
-                              ),
-                            );
+                        const SizedBox(height: 10),
+                        // Password input
+                        _buildTextField(
+                          controller: _passwordController,
+                          hintText: '••••••••',
+                          obscureText: _obscurePassword,
+                          prefixIcon: Icons.lock,
+                          suffixIcon: _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          onSuffixTap: () {
+                            setState(() => _obscurePassword = !_obscurePassword);
                           },
-                          child: Text(
-                            'Únete ahora',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: isSmallScreen ? 13 : 14,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Ingresa tu contraseña';
+                            }
+                            if (value.length < 6) {
+                              return 'Mínimo 6 caracteres';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 28),
+
+                        // Botón entrar
+                        GestureDetector(
+                          onTap: _isLoading ? null : _login,
+                          child: Container(
+                            width: double.infinity,
+                            height: 54,
+                            decoration: BoxDecoration(
+                              gradient: _LoginColors.vibrantBlue,
+                              borderRadius: BorderRadius.circular(28),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF2563EB).withAlpha(60),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        strokeWidth: 2.5,
+                                      ),
+                                    )
+                                  : const Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'ENTRAR',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 1.5,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Icon(
+                                          Icons.arrow_forward,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                      ],
+                                    ),
                             ),
                           ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Separador
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: _LoginColors.outlineVariant.withAlpha(100),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                'O CONTINÚA CON',
+                                style: TextStyle(
+                                  color: _LoginColors.onSurfaceVariant,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                height: 1,
+                                color: _LoginColors.outlineVariant.withAlpha(100),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Botones sociales
+                        Row(
+                          children: [
+                            // Google
+                            Expanded(
+                              child: _buildSocialButton(
+                                iconPath: 'google',
+                                label: 'Google',
+                                isGoogle: true,
+                                onTap: () {},
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Facebook
+                            Expanded(
+                              child: _buildSocialButton(
+                                iconPath: 'facebook',
+                                label: 'Facebook',
+                                isGoogle: false,
+                                onTap: () {},
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  
-                  SizedBox(height: isSmallScreen ? 16 : 20),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Registro
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      '¿No tienes una cuenta? ',
+                      style: TextStyle(
+                        color: _LoginColors.onSurfaceVariant,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const RegisterScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Regístrate ahora',
+                        style: TextStyle(
+                          color: _LoginColors.primary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 40),
+
+                // Footer
+                const Text(
+                  '© 2024 VYRA APP INC.',
+                  style: TextStyle(
+                    color: _LoginColors.outline,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // Links footer
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildFooterLink('Privacidad'),
+                    const SizedBox(width: 24),
+                    _buildFooterLink('Términos'),
+                    const SizedBox(width: 24),
+                    _buildFooterLink('Soporte'),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+              ],
             ),
           ),
         ),
       ),
     );
   }
+
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        color: _LoginColors.onSurfaceVariant,
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 1,
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    required IconData prefixIcon,
+    TextInputType keyboardType = TextInputType.text,
+    bool obscureText = false,
+    IconData? suffixIcon,
+    VoidCallback? onSuffixTap,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      validator: validator,
+      style: const TextStyle(
+        fontSize: 15,
+        color: _LoginColors.onSurface,
+      ),
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(
+          color: _LoginColors.outline.withAlpha(150),
+          fontSize: 15,
+        ),
+        filled: true,
+        fillColor: _LoginColors.surfaceContainerLowest,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: _LoginColors.primary, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFB41340), width: 1),
+        ),
+        prefixIcon: Icon(
+          prefixIcon,
+          color: _LoginColors.outline,
+          size: 20,
+        ),
+        suffixIcon: suffixIcon != null
+            ? GestureDetector(
+                onTap: onSuffixTap,
+                child: Icon(
+                  suffixIcon,
+                  color: _LoginColors.outline.withAlpha(180),
+                  size: 20,
+                ),
+              )
+            : null,
+      ),
+    );
+  }
+
+  Widget _buildSocialButton({
+    required String iconPath,
+    required String label,
+    required bool isGoogle,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 46,
+        decoration: BoxDecoration(
+          color: isGoogle ? _LoginColors.surfaceContainerLowest : const Color(0xFF1877F2),
+          borderRadius: BorderRadius.circular(24),
+          border: isGoogle
+              ? Border.all(color: _LoginColors.outlineVariant.withAlpha(50))
+              : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            isGoogle
+                ? Container(
+                    width: 20,
+                    height: 20,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                    ),
+                    child: CustomPaint(
+                      size: const Size(20, 20),
+                      painter: GoogleLogoPainter(),
+                    ),
+                  )
+                : const Icon(
+                    Icons.facebook,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: isGoogle ? _LoginColors.onSurface : Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFooterLink(String text) {
+    return GestureDetector(
+      onTap: () {},
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: _LoginColors.onSurfaceVariant,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+}
+
+// Pintor personalizado para el logo de onda
+class WavePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withAlpha(180)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5;
+
+    final path = Path();
+    
+    // Dibujar ondas suaves que simulan la imagen
+    for (int i = 0; i < 4; i++) {
+      final y = size.height * 0.35 + (i * 8);
+      path.moveTo(size.width * 0.2, y);
+      
+      path.quadraticBezierTo(
+        size.width * 0.4, y - 15,
+        size.width * 0.5, y,
+      );
+      path.quadraticBezierTo(
+        size.width * 0.6, y + 15,
+        size.width * 0.8, y - 5,
+      );
+    }
+    
+    canvas.drawPath(path, paint);
+    
+    // Segunda capa de ondas más tenue
+    final paint2 = Paint()
+      ..color = Colors.white.withAlpha(100)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    
+    final path2 = Path();
+    for (int i = 0; i < 3; i++) {
+      final y = size.height * 0.45 + (i * 10);
+      path2.moveTo(size.width * 0.25, y);
+      
+      path2.quadraticBezierTo(
+        size.width * 0.45, y - 10,
+        size.width * 0.55, y,
+      );
+      path2.quadraticBezierTo(
+        size.width * 0.65, y + 10,
+        size.width * 0.75, y - 3,
+      );
+    }
+    
+    canvas.drawPath(path2, paint2);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// Pintor para el logo de Google
+class GoogleLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 - 1;
+    
+    // Círculo rojo (arriba)
+    final redPaint = Paint()..color = const Color(0xFFEA4335);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -0.8,
+      2.0,
+      false,
+      redPaint..style = PaintingStyle.stroke..strokeWidth = 4,
+    );
+    
+    // Círculo verde (abajo derecha)
+    final greenPaint = Paint()..color = const Color(0xFF34A853);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      0.8,
+      2.0,
+      false,
+      greenPaint..style = PaintingStyle.stroke..strokeWidth = 4,
+    );
+    
+    // Círculo azul (abajo izquierda)
+    final bluePaint = Paint()..color = const Color(0xFF4285F4);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      2.5,
+      2.2,
+      false,
+      bluePaint..style = PaintingStyle.stroke..strokeWidth = 4,
+    );
+    
+    // Amarillo (parte del medio)
+    final yellowPaint = Paint()..color = const Color(0xFFFBBC05);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -2.5,
+      1.4,
+      false,
+      yellowPaint..style = PaintingStyle.stroke..strokeWidth = 4,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

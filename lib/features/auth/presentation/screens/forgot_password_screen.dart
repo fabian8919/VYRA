@@ -1,8 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:vyra/core/theme/app_theme.dart';
-import 'package:vyra/features/auth/presentation/widgets/custom_text_field.dart';
-import 'package:vyra/features/auth/presentation/widgets/gradient_button.dart';
 import 'package:vyra/services/auth_service.dart';
+
+// Colores del nuevo diseño
+class _ForgotColors {
+  static const Color background = Color(0xFFF0F0FF);
+  static const Color surfaceContainer = Color(0xFFE8E8FF);
+  static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
+  static const Color primary = Color(0xFF2563EB);
+  static const Color onSurface = Color(0xFF292B51);
+  static const Color onSurfaceVariant = Color(0xFF565881);
+  static const Color outline = Color(0xFF71739E);
+  static const Color outlineVariant = Color(0xFFC4C4E0);
+
+  static const LinearGradient vibrantBlue = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [Color(0xFF1D4ED8), Color(0xFF3B82F6)],
+  );
+}
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -31,7 +47,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     try {
       await _authService.resetPassword(_emailController.text.trim());
-      
+
       if (mounted) {
         setState(() => _emailSent = true);
       }
@@ -58,9 +74,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         ),
         backgroundColor: Colors.red.shade400,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
       ),
     );
@@ -68,156 +82,141 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isSmallScreen = size.height < 700;
-    
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: size.height,
-        decoration: const BoxDecoration(
-          gradient: AppTheme.primaryGradient,
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
-            child: Container(
-              constraints: BoxConstraints(
-                minHeight: size.height - 
-                    MediaQuery.of(context).padding.top - 
-                    MediaQuery.of(context).padding.bottom,
+      backgroundColor: _ForgotColors.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+
+              // Botón volver
+              GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: _ForgotColors.surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: _ForgotColors.outlineVariant, width: 1),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: _ForgotColors.onSurfaceVariant,
+                    size: 18,
+                  ),
+                ),
               ),
-              padding: EdgeInsets.all(isSmallScreen ? 20 : 28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: isSmallScreen ? 12 : 20),
-                  
-                  GestureDetector(
+
+              const SizedBox(height: 40),
+
+              // Título
+              const Text(
+                'Recuperar\ncontraseña',
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: _ForgotColors.onSurface,
+                  letterSpacing: -0.5,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                _emailSent
+                    ? 'Revisa tu correo para continuar'
+                    : 'Te enviaremos un enlace para restablecer tu contraseña',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: _ForgotColors.onSurfaceVariant,
+                  height: 1.5,
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // Card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(28),
+                decoration: BoxDecoration(
+                  color: _ForgotColors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: _emailSent
+                    ? _buildSuccessContent()
+                    : _buildFormContent(),
+              ),
+
+              const SizedBox(height: 32),
+
+              if (_emailSent)
+                Center(
+                  child: GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
                     child: Container(
-                      width: isSmallScreen ? 40 : 44,
-                      height: isSmallScreen ? 40 : 44,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(26),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.white.withAlpha(51),
-                          width: 1,
-                        ),
+                        gradient: AppTheme.buttonGradient,
+                        borderRadius: BorderRadius.circular(27),
+                        boxShadow: AppTheme.buttonShadow,
                       ),
-                      child: const Icon(
-                        Icons.arrow_back_ios_new,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
-                  ),
-                  
-                  SizedBox(height: isSmallScreen ? 24 : 40),
-                  
-                  Text(
-                    'Recuperar\ncontraseña',
-                    style: TextStyle(
-                      fontSize: isSmallScreen ? 30 : 36,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: -0.5,
-                      height: 1.2,
-                    ),
-                  ),
-                  SizedBox(height: isSmallScreen ? 8 : 12),
-                  Text(
-                    _emailSent 
-                      ? 'Revisa tu correo para continuar'
-                      : 'Te enviaremos un enlace para restablecer tu contraseña',
-                    style: TextStyle(
-                      fontSize: isSmallScreen ? 14 : 16,
-                      color: Colors.white.withAlpha(204),
-                      height: 1.5,
-                    ),
-                  ),
-                  
-                  SizedBox(height: isSmallScreen ? 24 : 40),
-                  
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(28),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(28),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.primaryDark.withAlpha(51),
-                          blurRadius: 30,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: _emailSent 
-                      ? _buildSuccessContent(isSmallScreen)
-                      : _buildFormContent(isSmallScreen),
-                  ),
-                  
-                  SizedBox(height: isSmallScreen ? 24 : 32),
-                  
-                  if (_emailSent)
-                    Center(
-                      child: GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
-                        child: Text(
-                          'Volver al inicio',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: isSmallScreen ? 14 : 15,
-                          ),
+                      child: const Text(
+                        'Volver al inicio',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
                         ),
                       ),
                     ),
-                  
-                  SizedBox(height: isSmallScreen ? 16 : 20),
-                ],
-              ),
-            ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildFormContent(bool isSmallScreen) {
+  Widget _buildFormContent() {
     return Form(
       key: _formKey,
       child: Column(
         children: [
+          // Icono
           Container(
-            width: isSmallScreen ? 70 : 80,
-            height: isSmallScreen ? 70 : 80,
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
-              color: AppTheme.lightBlue,
-              borderRadius: BorderRadius.circular(isSmallScreen ? 20 : 24),
+              color: _ForgotColors.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(24),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.lock_reset_outlined,
-              color: AppTheme.primaryBlue,
-              size: isSmallScreen ? 35 : 40,
+              color: _ForgotColors.primary,
+              size: 40,
             ),
           ),
-          
-          SizedBox(height: isSmallScreen ? 20 : 24),
-          
-          CustomTextField(
-            hintText: 'Correo electrónico',
+
+          const SizedBox(height: 24),
+
+          // Label
+          _buildLabel('CORREO ELECTRÓNICO'),
+          const SizedBox(height: 8),
+
+          // Input
+          _buildTextField(
             controller: _emailController,
+            hintText: 'tu@ejemplo.com',
             keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _sendResetEmail(),
-            prefixIcon: const Icon(
-              Icons.email_outlined,
-              color: AppTheme.primaryBlue,
-              size: 22,
-            ),
+            prefixIcon: Icons.email_outlined,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Ingresa tu correo';
@@ -228,80 +227,127 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               return null;
             },
           ),
-          
-          SizedBox(height: isSmallScreen ? 24 : 28),
-          
-          GradientButton(
-            text: 'Enviar enlace',
-            onPressed: _sendResetEmail,
-            isLoading: _isLoading,
+
+          const SizedBox(height: 28),
+
+          // Botón
+          GestureDetector(
+            onTap: _isLoading ? null : _sendResetEmail,
+            child: Container(
+              width: double.infinity,
+              height: 54,
+              decoration: BoxDecoration(
+                gradient: _ForgotColors.vibrantBlue,
+                borderRadius: BorderRadius.circular(27),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF2563EB).withAlpha(60),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                          strokeWidth: 2.5,
+                        ),
+                      )
+                    : const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'ENVIAR ENLACE',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Icon(
+                            Icons.arrow_forward,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSuccessContent(bool isSmallScreen) {
+  Widget _buildSuccessContent() {
     return Column(
       children: [
         Container(
-          width: isSmallScreen ? 90 : 100,
-          height: isSmallScreen ? 90 : 100,
+          width: 100,
+          height: 100,
           decoration: BoxDecoration(
-            gradient: AppTheme.buttonGradient,
-            borderRadius: BorderRadius.circular(isSmallScreen ? 24 : 28),
+            gradient: _ForgotColors.vibrantBlue,
+            borderRadius: BorderRadius.circular(28),
             boxShadow: [
               BoxShadow(
-                color: AppTheme.primaryBlue.withAlpha(77),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+                color: const Color(0xFF2563EB).withAlpha(60),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
-          child: Icon(
+          child: const Icon(
             Icons.mark_email_read_outlined,
             color: Colors.white,
-            size: isSmallScreen ? 42 : 48,
+            size: 48,
           ),
         ),
-        
-        SizedBox(height: isSmallScreen ? 20 : 24),
-        
-        Text(
+
+        const SizedBox(height: 24),
+
+        const Text(
           '¡Correo enviado!',
           style: TextStyle(
-            fontSize: isSmallScreen ? 22 : 24,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: AppTheme.textPrimary,
+            color: _ForgotColors.onSurface,
           ),
         ),
-        
-        SizedBox(height: isSmallScreen ? 10 : 12),
-        
+
+        const SizedBox(height: 12),
+
         Text(
           'Revisa ${_emailController.text}',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: isSmallScreen ? 14 : 15,
-            color: AppTheme.textSecondary,
+            fontSize: 15,
+            color: _ForgotColors.onSurfaceVariant,
             height: 1.5,
           ),
         ),
-        
-        SizedBox(height: isSmallScreen ? 20 : 24),
-        
+
+        const SizedBox(height: 20),
+
         TextButton.icon(
           onPressed: _isLoading ? null : _sendResetEmail,
-          icon: _isLoading 
-            ? SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: AppTheme.primaryBlue,
-                ),
-              )
-            : const Icon(Icons.refresh, size: 18),
+          icon: _isLoading
+              ? SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppTheme.primaryBlue,
+                  ),
+                )
+              : const Icon(Icons.refresh, size: 18),
           label: Text(
             _isLoading ? 'Enviando...' : 'Reenviar',
             style: const TextStyle(
@@ -311,6 +357,60 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        color: _ForgotColors.onSurfaceVariant,
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 1,
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    required IconData prefixIcon,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      validator: validator,
+      style: const TextStyle(fontSize: 15, color: _ForgotColors.onSurface),
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(color: _ForgotColors.outline.withAlpha(150), fontSize: 15),
+        filled: true,
+        fillColor: _ForgotColors.surfaceContainerLowest,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: _ForgotColors.primary, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFB41340), width: 1),
+        ),
+        prefixIcon: Icon(prefixIcon, color: _ForgotColors.outline, size: 20),
+      ),
     );
   }
 }

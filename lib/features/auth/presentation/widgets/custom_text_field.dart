@@ -42,15 +42,15 @@ class CustomTextField extends StatelessWidget {
       onChanged: onChanged,
       textInputAction: textInputAction,
       onFieldSubmitted: onSubmitted,
-      style: const TextStyle(
-        fontSize: 15,
-        color: AppTheme.textPrimary,
-      ),
+      style: const TextStyle(fontSize: 15, color: AppTheme.textPrimary),
       decoration: InputDecoration(
         hintText: hintText,
         filled: true,
         fillColor: AppTheme.primaryBlue.withAlpha(8),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 18,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -67,10 +67,7 @@ class CustomTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
-        hintStyle: TextStyle(
-          color: AppTheme.textLight,
-          fontSize: 15,
-        ),
+        hintStyle: TextStyle(color: AppTheme.textLight, fontSize: 15),
         prefixIcon: prefixIcon != null
             ? Padding(
                 padding: const EdgeInsets.only(left: 16, right: 12),
@@ -133,7 +130,9 @@ class _PasswordFieldState extends State<PasswordField> {
         size: 22,
       ),
       suffixIcon: Icon(
-        _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+        _obscureText
+            ? Icons.visibility_outlined
+            : Icons.visibility_off_outlined,
         color: AppTheme.textLight,
         size: 22,
       ),

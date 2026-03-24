@@ -7,13 +7,14 @@ import 'package:vyra/services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Inicializar Supabase
   await Supabase.initialize(
     url: 'https://nybndivzkohedszwmezs.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55Ym5kaXZ6a29oZWRzendtZXpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU0MzYsImV4cCI6MjA4ODU4MTQzNn0.n8mrFGEUOSHY54l9Q0aRgwmrr5ao2L0p0q4CGTIbmeo',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55Ym5kaXZ6a29oZWRzendtZXpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMDU0MzYsImV4cCI6MjA4ODU4MTQzNn0.n8mrFGEUOSHY54l9Q0aRgwmrr5ao2L0p0q4CGTIbmeo',
   );
-  
+
   runApp(const VyraApp());
 }
 
@@ -26,6 +27,7 @@ class VyraApp extends StatelessWidget {
       title: 'Vyra',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       home: const AuthWrapper(),
     );
   }
@@ -42,19 +44,17 @@ class AuthWrapper extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
-              child: CircularProgressIndicator(
-                color: AppTheme.primaryBlue,
-              ),
+              child: CircularProgressIndicator(color: AppTheme.primaryBlue),
             ),
           );
         }
-        
+
         // Verificar si hay sesión activa
         final session = snapshot.data?.session;
         if (session != null) {
           return const HomeScreen();
         }
-        
+
         return const LoginScreen();
       },
     );

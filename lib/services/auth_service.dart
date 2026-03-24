@@ -24,7 +24,7 @@ class AuthService {
         password: password,
         data: {'full_name': name},
       );
-      
+
       return res;
     } on AuthException catch (e) {
       throw _handleAuthException(e);
@@ -77,10 +77,8 @@ class AuthService {
       final updates = <String, dynamic>{};
       if (name != null) updates['full_name'] = name;
       if (avatarUrl != null) updates['avatar_url'] = avatarUrl;
-      
-      await _supabase.auth.updateUser(
-        UserAttributes(data: updates),
-      );
+
+      await _supabase.auth.updateUser(UserAttributes(data: updates));
     } on AuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
