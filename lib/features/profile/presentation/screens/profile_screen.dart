@@ -32,6 +32,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _authService = AuthService();
   bool _isGridView = true;
   final ScrollController _scrollController = ScrollController();
+  
+  // Inicializar listas vacías para evitar null
+  List<Map<String, dynamic>> _followers = [];
+  List<Map<String, dynamic>> _following = [];
 
   // Datos de ejemplo para notificaciones
   final List<Map<String, dynamic>> _notifications = [
@@ -106,7 +110,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     'totalLikes': 12547,
     'totalViews': 89234,
     'postsCount': 156,
+    'followers': 2847,
+    'following': 543,
   };
+
+  // Datos de ejemplo para seguidores
+  final List<Map<String, dynamic>> _followersData = [
+    {'name': 'María García', 'username': '@maria_g', 'avatar': 'M', 'isFollowing': true},
+    {'name': 'Carlos López', 'username': '@carlos_l', 'avatar': 'C', 'isFollowing': false},
+    {'name': 'Laura Martínez', 'username': '@laura_m', 'avatar': 'L', 'isFollowing': true},
+    {'name': 'Pedro Rodríguez', 'username': '@pedro_r', 'avatar': 'P', 'isFollowing': false},
+    {'name': 'Ana Fernández', 'username': '@ana_f', 'avatar': 'A', 'isFollowing': true},
+    {'name': 'Juan Pérez', 'username': '@juan_p', 'avatar': 'J', 'isFollowing': false},
+    {'name': 'Sofia Torres', 'username': '@sofia_t', 'avatar': 'S', 'isFollowing': true},
+    {'name': 'Diego Ramírez', 'username': '@diego_r', 'avatar': 'D', 'isFollowing': false},
+  ];
+
+  // Datos de ejemplo para seguidos
+  final List<Map<String, dynamic>> _followingData = [
+    {'name': 'Natalia Silva', 'username': '@natalia_s', 'avatar': 'N', 'isFollowing': true},
+    {'name': 'Andrea Ruiz', 'username': '@andrea_r', 'avatar': 'A', 'isFollowing': true},
+    {'name': 'Luis Gómez', 'username': '@luis_g', 'avatar': 'L', 'isFollowing': true},
+    {'name': 'Carmen Vargas', 'username': '@carmen_v', 'avatar': 'C', 'isFollowing': true},
+    {'name': 'Miguel Castro', 'username': '@miguel_c', 'avatar': 'M', 'isFollowing': true},
+    {'name': 'Isabel Morales', 'username': '@isabel_m', 'avatar': 'I', 'isFollowing': true},
+  ];
 
   final List<Map<String, dynamic>> _userPosts = [
     {
@@ -184,6 +212,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Inicializar listas mutables para poder modificar el estado de seguimiento
+    _followers = List<Map<String, dynamic>>.from(_followersData);
+    _following = List<Map<String, dynamic>>.from(_followingData);
+  }
+
+  @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
@@ -193,13 +229,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await _authService.signOut();
   }
 
-  String _formatNumber(int number) {
-    if (number >= 1000000) {
-      return '${(number / 1000000).toStringAsFixed(1)}M';
-    } else if (number >= 1000) {
-      return '${(number / 1000).toStringAsFixed(1)}K';
+  String _formatNumber(dynamic number) {
+    if (number == null) return '0';
+    final int num = number is int ? number : int.tryParse(number.toString()) ?? 0;
+    if (num >= 1000000) {
+      return '${(num / 1000000).toStringAsFixed(1)}M';
+    } else if (num >= 1000) {
+      return '${(num / 1000).toStringAsFixed(1)}K';
     }
-    return number.toString();
+    return num.toString();
   }
 
   @override
@@ -468,30 +506,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SliverToBoxAdapter(
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: _ProfileColors.surfaceContainerLowest,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                child: Column(
                   children: [
-                    _buildStat(
-                      'Posts',
-                      _userData['postsCount'].toString(),
-                      Icons.grid_on,
+                    // Primera fila: Posts, Likes, Vistas
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildStat(
+                          'Posts',
+                          _userData['postsCount'].toString(),
+                          Icons.grid_on,
+                        ),
+                        _buildDivider(),
+                        _buildStat(
+                          'Likes',
+                          _formatNumber(_userData['totalLikes']),
+                          Icons.favorite,
+                        ),
+                        _buildDivider(),
+                        _buildStat(
+                          'Vistas',
+                          _formatNumber(_userData['totalViews']),
+                          Icons.visibility,
+                        ),
+                      ],
                     ),
-                    _buildDivider(),
-                    _buildStat(
-                      'Likes',
-                      _formatNumber(_userData['totalLikes']),
-                      Icons.favorite,
+                    const SizedBox(height: 12),
+                    Divider(
+                      height: 1,
+                      color: _ProfileColors.outlineVariant.withAlpha(100),
                     ),
-                    _buildDivider(),
-                    _buildStat(
-                      'Vistas',
-                      _formatNumber(_userData['totalViews']),
-                      Icons.visibility,
+                    const SizedBox(height: 12),
+                    // Segunda fila: Seguidores, Siguiendo
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildStatClickable(
+                          'Seguidores',
+                          _formatNumber(_userData['followers']),
+                          Icons.people_outline,
+                          () => _showUsersModal(context, 'Seguidores', _followers),
+                        ),
+                        _buildDivider(),
+                        _buildStatClickable(
+                          'Siguiendo',
+                          _formatNumber(_userData['following']),
+                          Icons.person_add_outlined,
+                          () => _showUsersModal(context, 'Siguiendo', _following),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -641,6 +709,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildStatClickable(
+    String label,
+    String value,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          children: [
+            Icon(icon, color: _ProfileColors.primary, size: 22),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: const TextStyle(
+                color: _ProfileColors.onSurface,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: const TextStyle(color: _ProfileColors.outline, fontSize: 12),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildDivider() {
     return Container(width: 1, height: 40, color: _ProfileColors.outlineVariant);
   }
@@ -747,6 +849,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showUsersModal(
+    BuildContext context,
+    String title,
+    List<Map<String, dynamic>>? users,
+  ) {
+    if (users == null || users.isEmpty) return;
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => UsersListModal(
+        title: title,
+        users: users,
+        onFollowToggle: (index) {
+          setState(() {
+            users[index]['isFollowing'] = !users[index]['isFollowing'];
+          });
+        },
+      ),
+    );
+  }
+
   void _showNotificationsModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -827,7 +952,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const Icon(Icons.favorite, color: Colors.white, size: 14),
                       const SizedBox(width: 4),
                       Text(
-                        _formatNumber(post['likes']),
+                        _formatNumber(post['likes'] ?? 0),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -842,7 +967,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        _formatNumber(post['views']),
+                        _formatNumber(post['views'] ?? 0),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -1240,6 +1365,307 @@ class _AddPostOption extends StatelessWidget {
               Icons.arrow_forward_ios,
               color: Colors.grey.shade400,
               size: 16,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// MODAL DE USUARIOS (SEGUIDORES/SIGUIENDO) ESTILO INSTAGRAM
+// ============================================================================
+
+class UsersListModal extends StatefulWidget {
+  final String title;
+  final List<Map<String, dynamic>> users;
+  final Function(int) onFollowToggle;
+
+  const UsersListModal({
+    super.key,
+    required this.title,
+    required this.users,
+    required this.onFollowToggle,
+  });
+
+  @override
+  State<UsersListModal> createState() => _UsersListModalState();
+}
+
+class _UsersListModalState extends State<UsersListModal> {
+  final TextEditingController _searchController = TextEditingController();
+  late List<Map<String, dynamic>> _filteredUsers;
+  late List<int> _originalIndices;
+
+  @override
+  void initState() {
+    super.initState();
+    final usersList = widget.users;
+    _filteredUsers = List<Map<String, dynamic>>.from(usersList);
+    _originalIndices = List<int>.generate(usersList.length, (i) => i);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterUsers(String query) {
+    setState(() {
+      final usersList = widget.users;
+      if (query.isEmpty) {
+        _filteredUsers = List<Map<String, dynamic>>.from(usersList);
+        _originalIndices = List<int>.generate(usersList.length, (i) => i);
+      } else {
+        _filteredUsers = <Map<String, dynamic>>[];
+        _originalIndices = <int>[];
+        for (int i = 0; i < usersList.length; i++) {
+          final user = usersList[i];
+          final name = user['name']?.toString().toLowerCase() ?? '';
+          final username = user['username']?.toString().toLowerCase() ?? '';
+          if (name.contains(query.toLowerCase()) ||
+              username.contains(query.toLowerCase())) {
+            _filteredUsers.add(user);
+            _originalIndices.add(i);
+          }
+        }
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Column(
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                    bottom: BorderSide(color: Colors.grey.shade200),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    // Barra de arrastre
+                    Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Título
+                    Text(
+                      widget.title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: _ProfileColors.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${widget.users.length} ${widget.title.toLowerCase()}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Barra de búsqueda
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                    bottom: BorderSide(color: Colors.grey.shade200),
+                  ),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: _filterUsers,
+                    decoration: InputDecoration(
+                      hintText: 'Buscar',
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 16,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Colors.grey.shade500,
+                      ),
+                      prefixIconConstraints: const BoxConstraints(
+                        minWidth: 40,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Lista de usuarios
+              Expanded(
+                child: _filteredUsers.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.search_off,
+                              size: 64,
+                              color: Colors.grey.shade300,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No se encontraron usuarios',
+                              style: TextStyle(
+                                color: Colors.grey.shade500,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: scrollController,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: _filteredUsers.length,
+                        itemBuilder: (context, index) {
+                          final user = _filteredUsers[index];
+                          final originalIndex = _originalIndices[index];
+                          return _UserListItem(
+                            user: user,
+                            onFollowToggle: () {
+                              widget.onFollowToggle(originalIndex);
+                              setState(() {});
+                            },
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _UserListItem extends StatelessWidget {
+  final Map<String, dynamic> user;
+  final VoidCallback onFollowToggle;
+
+  const _UserListItem({
+    required this.user,
+    required this.onFollowToggle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isFollowing = user['isFollowing'] as bool? ?? false;
+    final avatar = user['avatar']?.toString() ?? '?';
+    final username = user['username']?.toString() ?? '@usuario';
+    final name = user['name']?.toString() ?? 'Usuario';
+
+    return InkWell(
+      onTap: () {},
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            // Avatar
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF2563EB), Color(0xFF3B82F6)],
+                ),
+                borderRadius: BorderRadius.circular(26),
+              ),
+              child: Center(
+                child: Text(
+                  avatar,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    username,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: _ProfileColors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Botón seguir/dejar de seguir
+            GestureDetector(
+              onTap: onFollowToggle,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isFollowing ? Colors.transparent : const Color(0xFF2563EB),
+                  borderRadius: BorderRadius.circular(8),
+                  border: isFollowing
+                      ? Border.all(color: Colors.grey.shade300)
+                      : null,
+                ),
+                child: Text(
+                  isFollowing ? 'Siguiendo' : 'Seguir',
+                  style: TextStyle(
+                    color: isFollowing ? _ProfileColors.onSurface : Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
