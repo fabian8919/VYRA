@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/services/auth_service.dart';
+import 'package:vyra/features/posts/presentation/screens/create_post_screen.dart';
 
 // Colores del nuevo diseño
 class _ProfileColors {
@@ -251,6 +253,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           Row(
                             children: [
+                              // Botón agregar post (+)
+                              Stack(
+                                children: [
+                                  IconButton(
+                                    onPressed: () => _showAddPostOptions(context),
+                                    icon: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        gradient: _ProfileColors.vibrantBlue,
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: const Color(0xFF2563EB).withAlpha(100),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: const Icon(
+                                        Icons.add,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  // Punto indicador
+                                  Positioned(
+                                    right: 6,
+                                    top: 6,
+                                    child: Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: const Color(0xFF2563EB),
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(width: 8),
+
                               // Botón de notificaciones
                               Stack(
                                 children: [
@@ -595,6 +643,108 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildDivider() {
     return Container(width: 1, height: 40, color: _ProfileColors.outlineVariant);
+  }
+
+  void _showAddPostOptions(BuildContext parentContext) {
+    final ImagePicker picker = ImagePicker();
+    
+    showModalBottomSheet(
+      context: parentContext,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Crear publicación',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: _ProfileColors.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                _AddPostOption(
+                  icon: Icons.camera_alt,
+                  label: 'Cámara',
+                  description: 'Toma una foto ahora',
+                  gradient: _ProfileColors.vibrantBlue,
+                  onTap: () async {
+                    // Cerrar el modal primero
+                    Navigator.pop(sheetContext);
+                    
+                    // Esperar a que se cierre el modal
+                    await Future.delayed(const Duration(milliseconds: 100));
+                    
+                    final XFile? photo = await picker.pickImage(
+                      source: ImageSource.camera,
+                      imageQuality: 85,
+                    );
+                    
+                    if (photo != null && parentContext.mounted) {
+                      Navigator.of(parentContext).push(
+                        MaterialPageRoute(
+                          builder: (context) => CreatePostScreen(
+                            initialImages: [photo],
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+                _AddPostOption(
+                  icon: Icons.photo_library,
+                  label: 'Galería',
+                  description: 'Elige de tu biblioteca',
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF10B981), Color(0xFF34D399)],
+                  ),
+                  onTap: () async {
+                    // Cerrar el modal primero
+                    Navigator.pop(sheetContext);
+                    
+                    // Esperar a que se cierre el modal
+                    await Future.delayed(const Duration(milliseconds: 100));
+                    
+                    final List<XFile> photos = await picker.pickMultiImage(
+                      imageQuality: 85,
+                    );
+                    
+                    if (photos.isNotEmpty && parentContext.mounted) {
+                      Navigator.of(parentContext).push(
+                        MaterialPageRoute(
+                          builder: (context) => CreatePostScreen(
+                            initialImages: photos,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   void _showNotificationsModal(BuildContext context) {
@@ -1018,6 +1168,80 @@ class _FilterChip extends StatelessWidget {
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: isActive ? const Color(0xFF2563EB) : Colors.grey.shade700,
+        ),
+      ),
+    );
+  }
+}
+
+// Opción para crear post
+class _AddPostOption extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String description;
+  final Gradient gradient;
+  final VoidCallback onTap;
+
+  const _AddPostOption({
+    required this.icon,
+    required this.label,
+    required this.description,
+    required this.gradient,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF0F0FF),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                gradient: gradient,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(icon, color: Colors.white, size: 28),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: _ProfileColors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.grey.shade400,
+              size: 16,
+            ),
+          ],
         ),
       ),
     );
