@@ -385,46 +385,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                 ],
                               ),
-                              IconButton(
-                                onPressed: () {},
-                                icon: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: _ProfileColors.surfaceContainerLowest,
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: _ProfileColors.outlineVariant.withAlpha(100),
-                                        blurRadius: 8,
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Icon(
-                                    Icons.more_vert,
-                                    color: _ProfileColors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: _logout,
-                                icon: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: _ProfileColors.surfaceContainerLowest,
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: _ProfileColors.outlineVariant.withAlpha(100),
-                                        blurRadius: 8,
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Icon(
-                                    Icons.logout,
-                                    color: _ProfileColors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ),
+                              // Menú de opciones (tres puntos)
+                              _buildMenuButton(context),
                             ],
                           ),
                         ],
@@ -568,43 +530,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SliverToBoxAdapter(child: SizedBox(height: 20)),
 
-            // Botón editar
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    width: double.infinity,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      gradient: _ProfileColors.vibrantBlue,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF2563EB).withAlpha(60),
-                          blurRadius: 16,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'Editar perfil',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
-
             // Tabs
             SliverToBoxAdapter(
               child: Container(
@@ -682,6 +607,169 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SliverToBoxAdapter(child: SizedBox(height: 40)),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuButton(BuildContext context) {
+    return PopupMenuButton<String>(
+      offset: const Offset(0, 50),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      color: Colors.white,
+      elevation: 8,
+      itemBuilder: (context) => [
+        // Editar perfil
+        PopupMenuItem<String>(
+          value: 'edit',
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE7F3FF),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.edit,
+                  color: Color(0xFF2563EB),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Editar perfil',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: _ProfileColors.onSurface,
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Configuración
+        PopupMenuItem<String>(
+          value: 'settings',
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.settings_outlined,
+                  color: Colors.grey.shade700,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Configuración',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey.shade800,
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Archivadas
+        PopupMenuItem<String>(
+          value: 'archived',
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.archive_outlined,
+                  color: Colors.grey.shade700,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Publicaciones archivadas',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey.shade800,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const PopupMenuDivider(),
+        // Cerrar sesión
+        PopupMenuItem<String>(
+          value: 'logout',
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFE4E4),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.logout,
+                  color: Colors.red,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Cerrar sesión',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.red,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+      onSelected: (value) {
+        switch (value) {
+          case 'edit':
+            // Navegar a editar perfil
+            break;
+          case 'settings':
+            // Navegar a configuración
+            break;
+          case 'archived':
+            // Navegar a archivadas
+            break;
+          case 'logout':
+            _logout();
+            break;
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: _ProfileColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: _ProfileColors.outlineVariant.withAlpha(100),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+        child: const Icon(
+          Icons.more_vert,
+          color: _ProfileColors.onSurfaceVariant,
         ),
       ),
     );
