@@ -31,6 +31,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isGridView = true;
   final ScrollController _scrollController = ScrollController();
 
+  // Datos de ejemplo para notificaciones
+  final List<Map<String, dynamic>> _notifications = [
+    {
+      'type': 'like',
+      'title': 'A María le gustó tu foto',
+      'message': 'Le encantó tu publicación del atardecer',
+      'time': 'Hace 5 min',
+      'icon': Icons.favorite,
+      'iconColor': Colors.red,
+      'iconBgColor': Color(0xFFFFE4E4),
+      'read': false,
+    },
+    {
+      'type': 'message',
+      'title': 'Nuevo mensaje de Carlos',
+      'message': 'Hey, ¿cómo estás? Me encantaron tus fotos...',
+      'time': 'Hace 15 min',
+      'icon': Icons.message,
+      'iconColor': Color(0xFF2563EB),
+      'iconBgColor': Color(0xFFE0E7FF),
+      'read': false,
+    },
+    {
+      'type': 'view',
+      'title': 'Laura vio tu perfil',
+      'message': 'Alguien nuevo ha visto tu perfil',
+      'time': 'Hace 1 hora',
+      'icon': Icons.visibility,
+      'iconColor': Color(0xFF10B981),
+      'iconBgColor': Color(0xFFD1FAE5),
+      'read': true,
+    },
+    {
+      'type': 'like',
+      'title': 'A Pedro y 3 más les gustó tu foto',
+      'message': 'Tu foto de la montaña está siendo popular',
+      'time': 'Hace 2 horas',
+      'icon': Icons.favorite,
+      'iconColor': Colors.red,
+      'iconBgColor': Color(0xFFFFE4E4),
+      'read': true,
+    },
+    {
+      'type': 'message',
+      'title': 'Nuevo mensaje de Ana',
+      'message': '¡Hola! ¿Qué cámara usas para tus fotos?',
+      'time': 'Hace 3 horas',
+      'icon': Icons.message,
+      'iconColor': Color(0xFF2563EB),
+      'iconBgColor': Color(0xFFE0E7FF),
+      'read': true,
+    },
+    {
+      'type': 'view',
+      'title': '15 personas vieron tu perfil',
+      'message': 'Tu perfil ha tenido visitas recientemente',
+      'time': 'Hace 5 horas',
+      'icon': Icons.visibility,
+      'iconColor': Color(0xFF10B981),
+      'iconBgColor': Color(0xFFD1FAE5),
+      'read': true,
+    },
+  ];
+
   final Map<String, dynamic> _userData = {
     'name': 'Andrés Felipe',
     'username': '@andres_f',
@@ -187,6 +251,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           Row(
                             children: [
+                              // Botón de notificaciones
+                              Stack(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      _showNotificationsModal(context);
+                                    },
+                                    icon: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: _ProfileColors.surfaceContainerLowest,
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: _ProfileColors.outlineVariant.withAlpha(100),
+                                            blurRadius: 8,
+                                          ),
+                                        ],
+                                      ),
+                                      child: const Icon(
+                                        Icons.notifications_outlined,
+                                        color: _ProfileColors.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ),
+                                  // Badge de notificaciones no leídas
+                                  if (_notifications.where((n) => !n['read']).isNotEmpty)
+                                    Positioned(
+                                      right: 6,
+                                      top: 6,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: const BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Text(
+                                          '${_notifications.where((n) => !n['read']).length}',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                               IconButton(
                                 onPressed: () {},
                                 icon: Container(
@@ -297,6 +409,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
 
                     const SizedBox(height: 24),
+
+
                   ],
                 ),
               ),
@@ -483,6 +597,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(width: 1, height: 40, color: _ProfileColors.outlineVariant);
   }
 
+  void _showNotificationsModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => NotificationsModal(
+        notifications: _notifications,
+        onMarkAsRead: (index) {
+          setState(() {
+            _notifications[index]['read'] = true;
+          });
+        },
+        onMarkAllAsRead: () {
+          setState(() {
+            for (var notification in _notifications) {
+              notification['read'] = true;
+            }
+          });
+        },
+      ),
+    );
+  }
+
   Widget _buildImageCard(Map<String, dynamic> post) {
     return GestureDetector(
       onTap: () {},
@@ -568,6 +705,319 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// MODAL DE NOTIFICACIONES ESTILO FACEBOOK
+// ============================================================================
+
+class NotificationsModal extends StatelessWidget {
+  final List<Map<String, dynamic>> notifications;
+  final Function(int) onMarkAsRead;
+  final VoidCallback onMarkAllAsRead;
+
+  const NotificationsModal({
+    super.key,
+    required this.notifications,
+    required this.onMarkAsRead,
+    required this.onMarkAllAsRead,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.92,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Column(
+            children: [
+              // Header arrastrable
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(20),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Barra de arrastre
+                    Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Título y acciones
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Notificaciones',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        // Botón marcar todo como leído
+                        _HeaderButton(
+                          icon: Icons.done_all,
+                          onTap: () {
+                            onMarkAllAsRead();
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Filtros tipo Facebook
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  children: [
+                    _FilterChip(label: 'Todas', isActive: true),
+                    const SizedBox(width: 8),
+                    _FilterChip(label: 'No leídas', isActive: false),
+                  ],
+                ),
+              ),
+
+              // Lista de notificaciones
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
+                  children: [
+                    // Sección: Nuevas
+                    if (notifications.any((n) => !n['read']))
+                      _buildSectionHeader('Nuevas'),
+                    ...notifications
+                        .asMap()
+                        .entries
+                        .where((e) => !e.value['read'])
+                        .map((e) => _buildFacebookNotification(e.key, e.value)),
+
+                    // Sección: Anteriores
+                    if (notifications.any((n) => n['read'])) ...[
+                      _buildSectionHeader('Anteriores'),
+                      ...notifications
+                          .asMap()
+                          .entries
+                          .where((e) => e.value['read'])
+                          .map((e) => _buildFacebookNotification(e.key, e.value)),
+                    ],
+
+                    const SizedBox(height: 40),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+            ),
+          ),
+          if (title == 'Nuevas')
+            Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                color: Color(0xFF2563EB),
+                shape: BoxShape.circle,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFacebookNotification(int index, Map<String, dynamic> notification) {
+    final bool isRead = notification['read'] as bool;
+    
+    return InkWell(
+      onTap: () {
+        onMarkAsRead(index);
+      },
+      child: Container(
+        color: isRead ? Colors.white : const Color(0xFFE7F3FF),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Avatar/Icono con indicador
+            Stack(
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: notification['iconBgColor'] as Color,
+                    border: Border.all(
+                      color: Colors.grey.shade200,
+                      width: 1,
+                    ),
+                  ),
+                  child: Icon(
+                    notification['icon'] as IconData,
+                    color: notification['iconColor'] as Color,
+                    size: 26,
+                  ),
+                ),
+                // Indicador de no leído
+                if (!isRead)
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      width: 14,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2563EB),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(width: 12),
+            // Contenido
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Texto de la notificación
+                  RichText(
+                    text: TextSpan(
+                      style: const TextStyle(
+                        fontSize: 15,
+                        height: 1.35,
+                        color: Colors.black87,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: notification['title'] as String,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        TextSpan(
+                          text: ' ${notification['message']}',
+                          style: const TextStyle(fontWeight: FontWeight.w400),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  // Tiempo
+                  Text(
+                    notification['time'] as String,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: isRead ? Colors.grey.shade500 : const Color(0xFF2563EB),
+                      fontWeight: isRead ? FontWeight.w400 : FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Menú de opciones
+            IconButton(
+              icon: Icon(Icons.more_horiz, color: Colors.grey.shade400),
+              onPressed: () {},
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Botón circular del header
+class _HeaderButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _HeaderButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.black87, size: 22),
+      ),
+    );
+  }
+}
+
+// Chip de filtro
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final bool isActive;
+
+  const _FilterChip({required this.label, required this.isActive});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: isActive ? const Color(0xFFE7F3FF) : Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: isActive ? const Color(0xFF2563EB) : Colors.grey.shade700,
         ),
       ),
     );
