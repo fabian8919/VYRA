@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/services/auth_service.dart';
@@ -33,9 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isGridView = true;
   final ScrollController _scrollController = ScrollController();
   
-  // Inicializar listas vacías para evitar null
-  List<Map<String, dynamic>> _followers = [];
-  List<Map<String, dynamic>> _following = [];
+
 
   // Datos de ejemplo para notificaciones
   final List<Map<String, dynamic>> _notifications = [
@@ -102,12 +100,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ];
 
   final Map<String, dynamic> _userData = {
-    'name': 'Andrés Felipe',
+    'name': 'Andres Felipe',
     'username': '@andres_f',
     'avatar': 'A',
     'bio':
-        '📸 Fotógrafo apasionado por los paisajes y la naturaleza.\n🌍 Viajando por el mundo una foto a la vez.',
-    'totalLikes': 12547,
+        '📸 Fotografo apasionado por los paisajes y la naturaleza.\n🌍 Viajando por el mundo una foto a la vez.',
     'totalViews': 89234,
     'postsCount': 156,
     'followers': 2847,
@@ -135,6 +132,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     {'name': 'Miguel Castro', 'username': '@miguel_c', 'avatar': 'M', 'isFollowing': true},
     {'name': 'Isabel Morales', 'username': '@isabel_m', 'avatar': 'I', 'isFollowing': true},
   ];
+
+  // Inicializar listas vacías para evitar null
+  List<Map<String, dynamic>> _followers = [];
+  List<Map<String, dynamic>> _following = [];
 
   final List<Map<String, dynamic>> _userPosts = [
     {
@@ -214,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Inicializar listas mutables para poder modificar el estado de seguimiento
+    // Inicializar listas mutables
     _followers = List<Map<String, dynamic>>.from(_followersData);
     _following = List<Map<String, dynamic>>.from(_followingData);
   }
@@ -464,63 +465,80 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-            // Stats Card
+            // Stats Card - Diseño proporcionado
             SliverToBoxAdapter(
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                 decoration: BoxDecoration(
                   color: _ProfileColors.surfaceContainerLowest,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
                   children: [
-                    // Primera fila: Posts, Likes, Vistas
+                    // Primera fila: Posts, Likes, Vistas (3 columnas)
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildStat(
-                          'Posts',
-                          _userData['postsCount'].toString(),
-                          Icons.grid_on,
+                        Expanded(
+                          child: _buildStat(
+                            'Posts',
+                            _userData['postsCount'].toString(),
+                            Icons.grid_on,
+                          ),
                         ),
                         _buildDivider(),
-                        _buildStat(
-                          'Likes',
-                          _formatNumber(_userData['totalLikes']),
-                          Icons.favorite,
+                        Expanded(
+                          child: _buildStat(
+                            'Likes',
+                            _formatNumber(_userData['totalLikes']),
+                            Icons.favorite,
+                          ),
                         ),
                         _buildDivider(),
-                        _buildStat(
-                          'Vistas',
-                          _formatNumber(_userData['totalViews']),
-                          Icons.visibility,
+                        Expanded(
+                          child: _buildStat(
+                            'Vistas',
+                            _formatNumber(_userData['totalViews']),
+                            Icons.visibility,
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    Divider(
-                      height: 1,
-                      color: _ProfileColors.outlineVariant.withAlpha(100),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Divider(
+                        height: 1,
+                        color: _ProfileColors.outlineVariant.withAlpha(100),
+                      ),
                     ),
-                    const SizedBox(height: 12),
-                    // Segunda fila: Seguidores, Siguiendo
+                    // Segunda fila: Seguidores, Siguiendo (2 columnas centradas)
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _buildStatClickable(
-                          'Seguidores',
-                          _formatNumber(_userData['followers']),
-                          Icons.people_outline,
-                          () => _showUsersModal(context, 'Seguidores', _followers),
+                        // Espacio vacío a la izquierda (1/6 del ancho)
+                        const Expanded(flex: 1, child: SizedBox()),
+                        // Seguidores (2/6 = 1/3 del ancho)
+                        Expanded(
+                          flex: 2,
+                          child: _buildStatClickable(
+                            'Seguidores',
+                            _formatNumber(_userData['followers']),
+                            Icons.people_outline,
+                            () => _showUsersModal(context, 'Seguidores', _followers),
+                          ),
                         ),
                         _buildDivider(),
-                        _buildStatClickable(
-                          'Siguiendo',
-                          _formatNumber(_userData['following']),
-                          Icons.person_add_outlined,
-                          () => _showUsersModal(context, 'Siguiendo', _following),
+                        // Siguiendo (2/6 = 1/3 del ancho)
+                        Expanded(
+                          flex: 2,
+                          child: _buildStatClickable(
+                            'Siguiendo',
+                            _formatNumber(_userData['following']),
+                            Icons.person_add_outlined,
+                            () => _showUsersModal(context, 'Siguiendo', _following),
+                          ),
                         ),
+                        // Espacio vacío a la derecha (1/6 del ancho)
+                        const Expanded(flex: 1, child: SizedBox()),
                       ],
                     ),
                   ],
@@ -650,7 +668,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
-        // Configuración
+        // Configuracion
         PopupMenuItem<String>(
           value: 'settings',
           child: Row(
@@ -669,7 +687,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(width: 12),
               Text(
-                'Configuración',
+                'Configuracion',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
@@ -709,7 +727,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         const PopupMenuDivider(),
-        // Cerrar sesión
+        // Cerrar sesion
         PopupMenuItem<String>(
           value: 'logout',
           child: Row(
@@ -728,7 +746,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(width: 12),
               const Text(
-                'Cerrar sesión',
+                'Cerrar sesion',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
@@ -937,29 +955,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showUsersModal(
-    BuildContext context,
-    String title,
-    List<Map<String, dynamic>>? users,
-  ) {
-    if (users == null || users.isEmpty) return;
-    
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => UsersListModal(
-        title: title,
-        users: users,
-        onFollowToggle: (index) {
-          setState(() {
-            users[index]['isFollowing'] = !users[index]['isFollowing'];
-          });
-        },
-      ),
-    );
-  }
-
   void _showNotificationsModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -1069,6 +1064,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showUsersModal(
+    BuildContext context,
+    String title,
+    List<Map<String, dynamic>>? users,
+  ) {
+    if (users == null || users.isEmpty) return;
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => UsersListModal(
+        title: title,
+        users: users,
+        onFollowToggle: (index) {
+          setState(() {
+            users[index]['isFollowing'] = !users[index]['isFollowing'];
+          });
+        },
       ),
     );
   }
@@ -1537,7 +1555,6 @@ class _UsersListModalState extends State<UsersListModal> {
           ),
           child: Column(
             children: [
-              // Header
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
@@ -1548,7 +1565,6 @@ class _UsersListModalState extends State<UsersListModal> {
                 ),
                 child: Column(
                   children: [
-                    // Barra de arrastre
                     Container(
                       width: 36,
                       height: 4,
@@ -1558,7 +1574,6 @@ class _UsersListModalState extends State<UsersListModal> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    // Título
                     Text(
                       widget.title,
                       style: const TextStyle(
@@ -1569,7 +1584,7 @@ class _UsersListModalState extends State<UsersListModal> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${widget.users.length} ${widget.title.toLowerCase()}',
+                      ' ',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey.shade600,
@@ -1578,8 +1593,6 @@ class _UsersListModalState extends State<UsersListModal> {
                   ],
                 ),
               ),
-
-              // Barra de búsqueda
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -1616,8 +1629,6 @@ class _UsersListModalState extends State<UsersListModal> {
                   ),
                 ),
               ),
-
-              // Lista de usuarios
               Expanded(
                 child: _filteredUsers.isEmpty
                     ? Center(
@@ -1687,7 +1698,6 @@ class _UserListItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
-            // Avatar
             Container(
               width: 52,
               height: 52,
@@ -1709,7 +1719,6 @@ class _UserListItem extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            // Info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1733,7 +1742,6 @@ class _UserListItem extends StatelessWidget {
                 ],
               ),
             ),
-            // Botón seguir/dejar de seguir
             GestureDetector(
               onTap: onFollowToggle,
               child: Container(
@@ -1761,3 +1769,6 @@ class _UserListItem extends StatelessWidget {
     );
   }
 }
+
+
+
