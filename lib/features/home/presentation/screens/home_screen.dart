@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vyra/core/theme/app_theme.dart';
+import 'package:vyra/features/home/presentation/widgets/comments_bottom_sheet.dart';
 import 'package:vyra/features/profile/presentation/screens/profile_screen.dart';
+import 'package:vyra/features/search/presentation/screens/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -139,6 +141,30 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             );
           },
+        ),
+
+        // Icono de búsqueda
+        Positioned(
+          top: MediaQuery.of(context).padding.top + 8,
+          left: 8,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withAlpha(77),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SearchScreen()),
+                );
+              },
+              icon: const Icon(
+                Icons.search,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+          ),
         ),
 
         // Header flotante
@@ -336,7 +362,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       // Comentarios
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          CommentsBottomSheet.show(
+                            context,
+                            commentCount: post['comments'],
+                            postUsername: post['username'],
+                          );
+                        },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
