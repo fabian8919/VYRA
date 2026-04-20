@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/features/home/presentation/widgets/comments_bottom_sheet.dart';
 import 'package:vyra/features/profile/presentation/screens/profile_screen.dart';
@@ -403,7 +404,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       // Compartir
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () async {
+                          try {
+                            await Share.share(
+                              'Mira esta publicación de ${post['username']}: ${post['title']}',
+                              subject: 'Compartir publicación',
+                            );
+                          } catch (e) {
+                            debugPrint('Error al compartir: $e');
+                          }
+                        },
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -431,11 +441,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        onSelected: (value) {
+                        onSelected: (value) async {
                           switch (value) {
                             case 'download':
                               break;
                             case 'share':
+                              try {
+                                debugPrint('Compartir presionado');
+                                await Share.share(
+                                  'Mira esta publicación de ${post['username']}: ${post['title']}',
+                                  subject: 'Compartir publicación',
+                                );
+                              } catch (e) {
+                                debugPrint('Error al compartir: $e');
+                              }
                               break;
                             case 'not_interested':
                               break;

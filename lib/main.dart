@@ -3,7 +3,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/features/auth/presentation/screens/login_screen.dart';
 import 'package:vyra/features/home/presentation/screens/home_screen.dart';
+import 'package:vyra/features/onboarding/presentation/screens/interests_screen.dart';
 import 'package:vyra/services/auth_service.dart';
+import 'package:vyra/services/onboarding_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,10 +54,52 @@ class AuthWrapper extends StatelessWidget {
         // Verificar si hay sesión activa
         final session = snapshot.data?.session;
         if (session != null) {
-          return const HomeScreen();
+          return const _PostLoginGate();
         }
 
         return const LoginScreen();
+      },
+    );
+  }
+}
+
+/// Widget que decide si mostrar la pantalla de intereses (primer ingreso)
+/// o ir directamente al Home.
+class _PostLoginGate extends StatefulWidget {
+  const _PostLoginGate();
+
+  @override
+  State<_PostLoginGate> createState() => _PostLoginGateState();
+}
+
+class _PostLoginGateState extends State<_PostLoginGate> {
+  late final Future<bool> _onboardingFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _onboardingFuture = OnboardingService().hasCompletedInterests();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _onboardingFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+            ),
+          );
+        }
+
+        final hasCompleted = snapshot.data ?? false;
+        if (!hasCompleted) {
+          return const InterestsScreen();
+        }
+
+        return const HomeScreen();
       },
     );
   }

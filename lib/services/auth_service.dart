@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:vyra/services/onboarding_service.dart';
 
 class AuthService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -54,6 +55,7 @@ class AuthService {
   // Cerrar sesión
   Future<void> signOut() async {
     try {
+      await OnboardingService().clearOnboardingState();
       await _supabase.auth.signOut();
     } catch (e) {
       throw Exception('Error al cerrar sesión: $e');
