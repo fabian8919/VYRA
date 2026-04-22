@@ -2,29 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:vyra/features/home/presentation/screens/home_screen.dart';
 import 'package:vyra/services/onboarding_service.dart';
 
-class InterestCategory {
+class InterestItem {
   final String name;
-  final IconData icon;
+  final String emoji;
 
-  const InterestCategory({required this.name, required this.icon});
+  const InterestItem({required this.name, required this.emoji});
 }
 
-final List<InterestCategory> _categories = const [
-  InterestCategory(name: 'Música', icon: Icons.music_note),
-  InterestCategory(name: 'Deportes', icon: Icons.sports_soccer),
-  InterestCategory(name: 'Tecnología', icon: Icons.computer),
-  InterestCategory(name: 'Viajes', icon: Icons.flight),
-  InterestCategory(name: 'Comida', icon: Icons.restaurant),
-  InterestCategory(name: 'Arte', icon: Icons.palette),
-  InterestCategory(name: 'Moda', icon: Icons.checkroom),
-  InterestCategory(name: 'Cine', icon: Icons.movie),
-  InterestCategory(name: 'Fotografía', icon: Icons.camera_alt),
-  InterestCategory(name: 'Gaming', icon: Icons.sports_esports),
-  InterestCategory(name: 'Libros', icon: Icons.menu_book),
-  InterestCategory(name: 'Fitness', icon: Icons.fitness_center),
-  InterestCategory(name: 'Naturaleza', icon: Icons.forest),
-  InterestCategory(name: 'Negocios', icon: Icons.trending_up),
-  InterestCategory(name: 'Ciencia', icon: Icons.science),
+final List<InterestItem> _interests = const [
+  InterestItem(name: 'Música', emoji: '🎵'),
+  InterestItem(name: 'Deportes', emoji: '⚽'),
+  InterestItem(name: 'Tecnología', emoji: '💻'),
+  InterestItem(name: 'Viajes', emoji: '✈️'),
+  InterestItem(name: 'Comida', emoji: '🍔'),
+  InterestItem(name: 'Arte', emoji: '🎨'),
+  InterestItem(name: 'Moda', emoji: '👗'),
+  InterestItem(name: 'Cine', emoji: '🎬'),
+  InterestItem(name: 'Fotografía', emoji: '📷'),
+  InterestItem(name: 'Gaming', emoji: '🎮'),
+  InterestItem(name: 'Libros', emoji: '📚'),
+  InterestItem(name: 'Fitness', emoji: '💪'),
+  InterestItem(name: 'Naturaleza', emoji: '🌿'),
+  InterestItem(name: 'Negocios', emoji: '📈'),
+  InterestItem(name: 'Ciencia', emoji: '🔬'),
+  InterestItem(name: 'Humor', emoji: '😂'),
+  InterestItem(name: 'Belleza', emoji: '💄'),
+  InterestItem(name: 'Mascotas', emoji: '🐶'),
 ];
 
 class InterestsScreen extends StatefulWidget {
@@ -35,17 +38,17 @@ class InterestsScreen extends StatefulWidget {
 }
 
 class _InterestsScreenState extends State<InterestsScreen> {
-  final Set<String> _selectedCategories = {};
+  final Set<String> _selectedInterests = {};
   bool _isSaving = false;
 
-  bool get _canProceed => _selectedCategories.length >= 3;
+  bool get _canProceed => _selectedInterests.length >= 3;
 
-  void _toggleCategory(String name) {
+  void _toggleInterest(String name) {
     setState(() {
-      if (_selectedCategories.contains(name)) {
-        _selectedCategories.remove(name);
+      if (_selectedInterests.contains(name)) {
+        _selectedInterests.remove(name);
       } else {
-        _selectedCategories.add(name);
+        _selectedInterests.add(name);
       }
     });
   }
@@ -73,153 +76,92 @@ class _InterestsScreenState extends State<InterestsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F0FF),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
 
               // Título
               const Text(
-                '¿Qué te interesa?',
+                'Elige tus\nintereses',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF292B51),
+                  color: Color(0xFF1A1A2E),
                   letterSpacing: -0.5,
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // Subtítulo
-              Text(
-                'Selecciona al menos 3 categorías para personalizar tu experiencia.',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xFF565881),
-                  height: 1.4,
+                  height: 1.2,
                 ),
               ),
 
               const SizedBox(height: 8),
 
-              // Contador
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: _canProceed
-                      ? const Color(0xFF2563EB).withAlpha(20)
-                      : const Color(0xFF565881).withAlpha(20),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '${_selectedCategories.length} de 3 seleccionados',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: _canProceed
-                        ? const Color(0xFF2563EB)
-                        : const Color(0xFF565881),
-                  ),
+              // Subtítulo
+              Text(
+                'Selecciona al menos 3 para personalizar tu experiencia.',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xFF8E8E93),
+                  height: 1.4,
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
-              // Grid de categorías
+              // Chips de intereses
               Expanded(
-                child: GridView.builder(
+                child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.35,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
+                  child: Wrap(
+                    spacing: 10,
+                    runSpacing: 12,
+                    children: _interests.map((interest) {
+                      final isSelected = _selectedInterests.contains(interest.name);
+                      return _InterestChip(
+                        interest: interest,
+                        isSelected: isSelected,
+                        onTap: () => _toggleInterest(interest.name),
+                      );
+                    }).toList(),
                   ),
-                  itemCount: _categories.length,
-                  itemBuilder: (context, index) {
-                    final category = _categories[index];
-                    final isSelected = _selectedCategories.contains(category.name);
-
-                    return _CategoryCard(
-                      category: category,
-                      isSelected: isSelected,
-                      onTap: () => _toggleCategory(category.name),
-                    );
-                  },
                 ),
               ),
 
               const SizedBox(height: 16),
 
-              // Botón continuar
+              // Botón Continuar
               GestureDetector(
-                onTap: _isSaving ? null : _onContinue,
+                onTap: _isSaving || !_canProceed ? null : _onContinue,
                 child: Container(
                   width: double.infinity,
-                  height: 56,
+                  height: 52,
                   decoration: BoxDecoration(
-                    gradient: _canProceed
-                        ? const LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              Color(0xFF1D4ED8),
-                              Color(0xFF3B82F6),
-                            ],
-                          )
-                        : null,
-                    color: _canProceed ? null : Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(28),
-                    boxShadow: _canProceed
-                        ? [
-                            BoxShadow(
-                              color: const Color(0xFF2563EB).withAlpha(60),
-                              blurRadius: 16,
-                              offset: const Offset(0, 6),
-                            ),
-                          ]
-                        : null,
+                    color: _canProceed
+                        ? const Color(0xFF1A1A2E)
+                        : const Color(0xFFE5E5EA),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
                     child: _isSaving
                         ? const SizedBox(
-                            height: 24,
-                            width: 24,
+                            height: 20,
+                            width: 20,
                             child: CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                              strokeWidth: 2.5,
+                              strokeWidth: 2,
+                              color: Colors.white,
                             ),
                           )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'CONTINUAR',
-                                style: TextStyle(
-                                  color: _canProceed
-                                      ? Colors.white
-                                      : Colors.grey.shade500,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 1.5,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Icon(
-                                Icons.arrow_forward,
-                                color: _canProceed
-                                    ? Colors.white
-                                    : Colors.grey.shade500,
-                                size: 20,
-                              ),
-                            ],
+                        : const Text(
+                            'Continuar',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                   ),
                 ),
@@ -234,13 +176,13 @@ class _InterestsScreenState extends State<InterestsScreen> {
   }
 }
 
-class _CategoryCard extends StatelessWidget {
-  final InterestCategory category;
+class _InterestChip extends StatelessWidget {
+  final InterestItem interest;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _CategoryCard({
-    required this.category,
+  const _InterestChip({
+    required this.interest,
     required this.isSelected,
     required this.onTap,
   });
@@ -252,94 +194,40 @@ class _CategoryCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          gradient: isSelected
-              ? const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF3B82F6),
-                    Color(0xFF2563EB),
-                    Color(0xFF1D4ED8),
-                  ],
-                  stops: [0.0, 0.5, 1.0],
-                )
-              : const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFFFFFFF),
-                    Color(0xFFF8FAFF),
-                  ],
-                ),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFF2563EB).withAlpha(77),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: const Color(0xFF3B82F6).withAlpha(15),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-          border: isSelected
-              ? null
-              : Border.all(
-                  color: const Color(0xFFC4C4E0).withAlpha(80),
-                  width: 1,
-                ),
+          color: isSelected ? const Color(0xFFFFF9E6) : Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFFFFD966)
+                : const Color(0xFFE5E5EA),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(8),
+              blurRadius: 12,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        child: Stack(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Contenido centrado
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    category.icon,
-                    size: 32,
-                    color: isSelected ? Colors.white : const Color(0xFF2563EB),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    category.name,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : const Color(0xFF292B51),
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ],
+            Text(
+              interest.emoji,
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              interest.name,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? const Color(0xFF1A1A2E) : const Color(0xFF3C3C43),
               ),
             ),
-
-            // Checkmark cuando está seleccionado
-            if (isSelected)
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Container(
-                  width: 22,
-                  height: 22,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.check,
-                    size: 14,
-                    color: Color(0xFF2563EB),
-                  ),
-                ),
-              ),
           ],
         ),
       ),
