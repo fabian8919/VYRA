@@ -2,24 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/services/auth_service.dart';
 
-// Colores del nuevo diseño
-class _ForgotColors {
-  static const Color background = Color(0xFFF0F0FF);
-  static const Color surfaceContainer = Color(0xFFE8E8FF);
-  static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
-  static const Color primary = Color(0xFF2563EB);
-  static const Color onSurface = Color(0xFF292B51);
-  static const Color onSurfaceVariant = Color(0xFF565881);
-  static const Color outline = Color(0xFF71739E);
-  static const Color outlineVariant = Color(0xFFC4C4E0);
-
-  static const LinearGradient vibrantBlue = LinearGradient(
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
-    colors: [Color(0xFF1D4ED8), Color(0xFF3B82F6)],
-  );
-}
-
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -83,7 +65,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _ForgotColors.background,
+      backgroundColor: AppTheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -99,13 +81,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: _ForgotColors.surfaceContainerLowest,
+                    color: AppTheme.surfaceContainerLowest,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _ForgotColors.outlineVariant, width: 1),
+                    border: Border.all(color: AppTheme.outlineVariant, width: 1),
                   ),
                   child: const Icon(
                     Icons.arrow_back_ios_new,
-                    color: _ForgotColors.onSurfaceVariant,
+                    color: AppTheme.onSurfaceVariant,
                     size: 18,
                   ),
                 ),
@@ -119,7 +101,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
-                  color: _ForgotColors.onSurface,
+                  color: AppTheme.onSurface,
                   letterSpacing: -0.5,
                   height: 1.2,
                 ),
@@ -131,7 +113,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     : 'Te enviaremos un enlace para restablecer tu contraseña',
                 style: TextStyle(
                   fontSize: 16,
-                  color: _ForgotColors.onSurfaceVariant,
+                  color: AppTheme.onSurfaceVariant,
                   height: 1.5,
                 ),
               ),
@@ -143,7 +125,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(28),
                 decoration: BoxDecoration(
-                  color: _ForgotColors.surfaceContainer,
+                  color: AppTheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: _emailSent
@@ -195,12 +177,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: _ForgotColors.surfaceContainerLowest,
+              color: AppTheme.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(24),
             ),
             child: const Icon(
               Icons.lock_reset_outlined,
-              color: _ForgotColors.primary,
+              color: AppTheme.primaryBlue,
               size: 40,
             ),
           ),
@@ -237,7 +219,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               width: double.infinity,
               height: 54,
               decoration: BoxDecoration(
-                gradient: _ForgotColors.vibrantBlue,
+                gradient: AppTheme.buttonGradient,
                 borderRadius: BorderRadius.circular(27),
                 boxShadow: [
                   BoxShadow(
@@ -294,7 +276,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           width: 100,
           height: 100,
           decoration: BoxDecoration(
-            gradient: _ForgotColors.vibrantBlue,
+            gradient: AppTheme.buttonGradient,
             borderRadius: BorderRadius.circular(28),
             boxShadow: [
               BoxShadow(
@@ -318,7 +300,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: _ForgotColors.onSurface,
+            color: AppTheme.onSurface,
           ),
         ),
 
@@ -329,7 +311,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 15,
-            color: _ForgotColors.onSurfaceVariant,
+            color: AppTheme.onSurfaceVariant,
             height: 1.5,
           ),
         ),
@@ -364,7 +346,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Text(
       text,
       style: const TextStyle(
-        color: _ForgotColors.onSurfaceVariant,
+        color: AppTheme.onSurfaceVariant,
         fontSize: 12,
         fontWeight: FontWeight.w700,
         letterSpacing: 1,
@@ -383,12 +365,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
-      style: const TextStyle(fontSize: 15, color: _ForgotColors.onSurface),
+      style: const TextStyle(fontSize: 15, color: AppTheme.onSurface),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: TextStyle(color: _ForgotColors.outline.withAlpha(150), fontSize: 15),
+        hintStyle: TextStyle(color: AppTheme.outline.withAlpha(150), fontSize: 15),
         filled: true,
-        fillColor: _ForgotColors.surfaceContainerLowest,
+        fillColor: AppTheme.surfaceContainerLowest,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
@@ -403,13 +385,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: _ForgotColors.primary, width: 2),
+          borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFFB41340), width: 1),
         ),
-        prefixIcon: Icon(prefixIcon, color: _ForgotColors.outline, size: 20),
+        prefixIcon: Icon(prefixIcon, color: AppTheme.outline, size: 20),
       ),
     );
   }

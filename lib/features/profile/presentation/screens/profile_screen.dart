@@ -3,23 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/services/auth_service.dart';
 import 'package:vyra/features/posts/presentation/screens/create_post_screen.dart';
-
-// Colores del nuevo diseño
-class _ProfileColors {
-  static const Color background = Color(0xFFF0F0FF);
-  static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
-  static const Color primary = Color(0xFF2563EB);
-  static const Color onSurface = Color(0xFF292B51);
-  static const Color onSurfaceVariant = Color(0xFF565881);
-  static const Color outline = Color(0xFF71739E);
-  static const Color outlineVariant = Color(0xFFC4C4E0);
-
-  static const LinearGradient vibrantBlue = LinearGradient(
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
-    colors: [Color(0xFF1D4ED8), Color(0xFF3B82F6)],
-  );
-}
+import 'package:vyra/features/profile/presentation/screens/edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -31,6 +15,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final _authService = AuthService();
   bool _isGridView = true;
+  bool _isLoadingProfile = true;
+  Map<String, dynamic>? _profileData;
   final ScrollController _scrollController = ScrollController();
   
 
@@ -218,6 +204,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Inicializar listas mutables
     _followers = List<Map<String, dynamic>>.from(_followersData);
     _following = List<Map<String, dynamic>>.from(_followingData);
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final user = _authService.currentUser;
+    if (user != null) {
+      try {
+        final profile = await _authService.getProfile(user.id);
+        if (mounted) {
+          setState(() {
+            _profileData = profile;
+            _isLoadingProfile = false;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() => _isLoadingProfile = false);
+        }
+      }
+    } else {
+      setState(() => _isLoadingProfile = false);
+    }
   }
 
   @override
@@ -228,6 +236,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _logout() async {
     await _authService.signOut();
+  }
+
+  String _getProfileValue(String key, dynamic fallback) {
+    final value = _profileData?[key];
+    if (value != null && value.toString().isNotEmpty) return value.toString();
+    if (fallback != null) return fallback.toString();
+    return '';
   }
 
   String _formatNumber(dynamic number) {
@@ -243,12 +258,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingProfile) {
+      return const Scaffold(
+        backgroundColor: AppTheme.background,
+        body: Center(
+          child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+        ),
+      );
+    }
+
     final user = _authService.currentUser;
-    final userName =
-        user?.userMetadata?['full_name'] as String? ?? _userData['name'];
+    final nickName = _getProfileValue('username', _userData['name']);
+    final fullName = user?.userMetadata?['full_name'] as String?;
+    final userBio = _getProfileValue('bio', _userData['bio']);
+    final avatarUrl = _profileData?['avatar_url'] as String?;
 
     return Scaffold(
-      backgroundColor: _ProfileColors.background,
+      backgroundColor: AppTheme.background,
       body: SafeArea(
         child: CustomScrollView(
           controller: _scrollController,
@@ -275,18 +301,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             icon: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: _ProfileColors.surfaceContainerLowest,
+                                color: AppTheme.surfaceContainerLowest,
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: _ProfileColors.outlineVariant.withAlpha(100),
+                                    color: AppTheme.outlineVariant.withAlpha(100),
                                     blurRadius: 8,
                                   ),
                                 ],
                               ),
                               child: const Icon(
                                 Icons.arrow_back,
-                                color: _ProfileColors.onSurfaceVariant,
+                                color: AppTheme.onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -300,7 +326,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     icon: Container(
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        gradient: _ProfileColors.vibrantBlue,
+                                        gradient: AppTheme.buttonGradient,
                                         borderRadius: BorderRadius.circular(12),
                                         boxShadow: [
                                           BoxShadow(
@@ -348,18 +374,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     icon: Container(
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: _ProfileColors.surfaceContainerLowest,
+                                        color: AppTheme.surfaceContainerLowest,
                                         borderRadius: BorderRadius.circular(12),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: _ProfileColors.outlineVariant.withAlpha(100),
+                                            color: AppTheme.outlineVariant.withAlpha(100),
                                             blurRadius: 8,
                                           ),
                                         ],
                                       ),
                                       child: const Icon(
                                         Icons.notifications_outlined,
-                                        color: _ProfileColors.onSurfaceVariant,
+                                        color: AppTheme.onSurfaceVariant,
                                       ),
                                     ),
                                   ),
@@ -404,42 +430,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         border: Border.all(color: Colors.white, width: 4),
                         boxShadow: AppTheme.buttonShadow,
                       ),
-                      child: Center(
-                        child: Text(
-                          userName.toString().isNotEmpty
-                              ? userName.toString()[0].toUpperCase()
-                              : 'U',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                      child: ClipOval(
+                        child: avatarUrl != null && avatarUrl.isNotEmpty
+                            ? Image.network(
+                                avatarUrl,
+                                width: 110,
+                                height: 110,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    _buildAvatarFallback(fullName ?? nickName),
+                              )
+                            : _buildAvatarFallback(fullName ?? nickName),
                       ),
                     ),
 
                     const SizedBox(height: 20),
 
-                    // Nombre
+                    // Nombre completo
                     Text(
-                      userName,
+                      fullName ?? nickName,
                       style: const TextStyle(
-                        color: _ProfileColors.onSurface,
+                        color: AppTheme.onSurface,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
 
-                    const SizedBox(height: 4),
-
-                    // Username
-                    Text(
-                      _userData['username'],
-                      style: const TextStyle(
-                        color: _ProfileColors.onSurfaceVariant,
-                        fontSize: 16,
+                    if (fullName != null && fullName.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          nickName,
+                          style: const TextStyle(
+                            color: AppTheme.onSurfaceVariant,
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
-                    ),
 
                     const SizedBox(height: 16),
 
@@ -447,10 +474,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 32),
                       child: Text(
-                        _userData['bio'],
+                        userBio,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                          color: _ProfileColors.onSurfaceVariant,
+                          color: AppTheme.onSurfaceVariant,
                           fontSize: 14,
                           height: 1.5,
                         ),
@@ -471,7 +498,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 margin: const EdgeInsets.symmetric(horizontal: 24),
                 padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: _ProfileColors.surfaceContainerLowest,
+                  color: AppTheme.surfaceContainerLowest,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -508,7 +535,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Divider(
                         height: 1,
-                        color: _ProfileColors.outlineVariant.withAlpha(100),
+                        color: AppTheme.outlineVariant.withAlpha(100),
                       ),
                     ),
                     // Segunda fila: Seguidores, Siguiendo (2 columnas centradas)
@@ -553,7 +580,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
                 decoration: BoxDecoration(
-                  color: _ProfileColors.surfaceContainerLowest,
+                  color: AppTheme.surfaceContainerLowest,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -565,7 +592,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           decoration: BoxDecoration(
                             gradient: _isGridView
-                                ? _ProfileColors.vibrantBlue
+                                ? AppTheme.buttonGradient
                                 : null,
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -573,7 +600,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Icons.grid_on,
                             color: _isGridView
                                 ? Colors.white
-                                : _ProfileColors.outline,
+                                : AppTheme.outline,
                             size: 22,
                           ),
                         ),
@@ -586,7 +613,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           decoration: BoxDecoration(
                             gradient: !_isGridView
-                                ? _ProfileColors.vibrantBlue
+                                ? AppTheme.buttonGradient
                                 : null,
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -594,7 +621,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Icons.view_list,
                             color: !_isGridView
                                 ? Colors.white
-                                : _ProfileColors.outline,
+                                : AppTheme.outline,
                             size: 22,
                           ),
                         ),
@@ -662,7 +689,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: _ProfileColors.onSurface,
+                  color: AppTheme.onSurface,
                 ),
               ),
             ],
@@ -760,7 +787,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onSelected: (value) {
         switch (value) {
           case 'edit':
-            // Navegar a editar perfil
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+            ).then((_) => _loadProfile());
             break;
           case 'settings':
             // Navegar a configuración
@@ -776,18 +806,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: _ProfileColors.surfaceContainerLowest,
+          color: AppTheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: _ProfileColors.outlineVariant.withAlpha(100),
+              color: AppTheme.outlineVariant.withAlpha(100),
               blurRadius: 8,
             ),
           ],
         ),
         child: const Icon(
           Icons.more_vert,
-          color: _ProfileColors.onSurfaceVariant,
+          color: AppTheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatarFallback(dynamic userName) {
+    return Center(
+      child: Text(
+        userName.toString().isNotEmpty
+            ? userName.toString()[0].toUpperCase()
+            : 'U',
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 48,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
@@ -796,12 +841,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildStat(String label, String value, IconData icon) {
     return Column(
       children: [
-        Icon(icon, color: _ProfileColors.primary, size: 22),
+        Icon(icon, color: AppTheme.primaryBlue, size: 22),
         const SizedBox(height: 8),
         Text(
           value,
           style: const TextStyle(
-            color: _ProfileColors.onSurface,
+            color: AppTheme.onSurface,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -809,7 +854,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(color: _ProfileColors.outline, fontSize: 12),
+          style: const TextStyle(color: AppTheme.outline, fontSize: 12),
         ),
       ],
     );
@@ -828,12 +873,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Column(
           children: [
-            Icon(icon, color: _ProfileColors.primary, size: 22),
+            Icon(icon, color: AppTheme.primaryBlue, size: 22),
             const SizedBox(height: 8),
             Text(
               value,
               style: const TextStyle(
-                color: _ProfileColors.onSurface,
+                color: AppTheme.onSurface,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -841,7 +886,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 2),
             Text(
               label,
-              style: const TextStyle(color: _ProfileColors.outline, fontSize: 12),
+              style: const TextStyle(color: AppTheme.outline, fontSize: 12),
             ),
           ],
         ),
@@ -850,7 +895,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildDivider() {
-    return Container(width: 1, height: 40, color: _ProfileColors.outlineVariant);
+    return Container(width: 1, height: 40, color: AppTheme.outlineVariant);
   }
 
   void _showAddPostOptions(BuildContext parentContext) {
@@ -884,7 +929,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: _ProfileColors.onSurface,
+                    color: AppTheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -892,7 +937,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   icon: Icons.camera_alt,
                   label: 'Cámara',
                   description: 'Toma una foto ahora',
-                  gradient: _ProfileColors.vibrantBlue,
+                  gradient: AppTheme.buttonGradient,
                   onTap: () async {
                     // Cerrar el modal primero
                     Navigator.pop(sheetContext);
@@ -986,7 +1031,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: _ProfileColors.outlineVariant.withAlpha(100),
+              color: AppTheme.outlineVariant.withAlpha(100),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -1006,7 +1051,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Colors.grey.shade100,
                     child: const Center(
                       child: CircularProgressIndicator(
-                        color: _ProfileColors.primary,
+                        color: AppTheme.primaryBlue,
                         strokeWidth: 2,
                       ),
                     ),
@@ -1453,7 +1498,7 @@ class _AddPostOption extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
-                      color: _ProfileColors.onSurface,
+                      color: AppTheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -1579,7 +1624,7 @@ class _UsersListModalState extends State<UsersListModal> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: _ProfileColors.onSurface,
+                        color: AppTheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -1728,7 +1773,7 @@ class _UserListItem extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: _ProfileColors.onSurface,
+                      color: AppTheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -1756,7 +1801,7 @@ class _UserListItem extends StatelessWidget {
                 child: Text(
                   isFollowing ? 'Siguiendo' : 'Seguir',
                   style: TextStyle(
-                    color: isFollowing ? _ProfileColors.onSurface : Colors.white,
+                    color: isFollowing ? AppTheme.onSurface : Colors.white,
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),

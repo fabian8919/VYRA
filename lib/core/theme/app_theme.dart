@@ -23,7 +23,9 @@ class AppTheme {
   static const Color textSecondary = Color(0xFF565881);
   static const Color textLight = Color(0xFF71739E);
   static const Color textMuted = Color(0xFF565881);
-  
+  static const Color onSurface = Color(0xFF292B51);
+  static const Color onSurfaceVariant = Color(0xFF565881);
+
   // Bordes y divisores
   static const Color outline = Color(0xFF71739E);
   static const Color outlineVariant = Color(0xFFC4C4E0);

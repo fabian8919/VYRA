@@ -2,15 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
-// Colores del tema
-class _CreatePostColors {
-  static const Color background = Color(0xFFF0F0FF);
-  static const Color primary = Color(0xFF2563EB);
-  static const Color onSurface = Color(0xFF292B51);
-  static const Color onSurfaceVariant = Color(0xFF565881);
-  static const Color outlineVariant = Color(0xFFC4C4E0);
-}
+import 'package:vyra/core/theme/app_theme.dart';
 
 class CreatePostScreen extends StatefulWidget {
   final List<XFile>? initialImages;
@@ -134,7 +126,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: _CreatePostColors.onSurface,
+                    color: AppTheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -190,18 +182,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _CreatePostColors.background,
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: _CreatePostColors.onSurface),
+          icon: const Icon(Icons.close, color: AppTheme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Nueva publicación',
           style: TextStyle(
-            color: _CreatePostColors.onSurface,
+            color: AppTheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -215,7 +207,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(_CreatePostColors.primary),
+                      valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryBlue),
                     ),
                   )
                 : Text(
@@ -223,7 +215,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     style: TextStyle(
                       color: _selectedImages.isEmpty
                           ? Colors.grey
-                          : _CreatePostColors.primary,
+                          : AppTheme.primaryBlue,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -358,7 +350,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
-                            border: Border.all(color: _CreatePostColors.outlineVariant),
+                            border: Border.all(color: AppTheme.outlineVariant),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -366,13 +358,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                             children: [
                               Icon(
                                 Icons.add_circle_outline,
-                                color: _CreatePostColors.primary,
+                                color: AppTheme.primaryBlue,
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 'Agregar más fotos',
                                 style: TextStyle(
-                                  color: _CreatePostColors.primary,
+                                  color: AppTheme.primaryBlue,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -423,7 +415,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: _CreatePostColors.onSurface,
+                          color: AppTheme.onSurface,
                         ),
                       ),
                     ],
@@ -451,7 +443,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     ),
                     style: const TextStyle(
                       fontSize: 16,
-                      color: _CreatePostColors.onSurface,
+                      color: AppTheme.onSurface,
                       height: 1.5,
                     ),
                   ),
@@ -485,7 +477,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       floatingActionButton: _selectedImages.isEmpty
           ? FloatingActionButton.extended(
               onPressed: _showImageSourceDialog,
-              backgroundColor: _CreatePostColors.primary,
+              backgroundColor: AppTheme.primaryBlue,
               icon: const Icon(Icons.add_photo_alternate),
               label: const Text('Agregar foto'),
             )
@@ -545,7 +537,7 @@ class _ImageSourceOption extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
-                      color: _CreatePostColors.onSurface,
+                      color: AppTheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -590,13 +582,13 @@ class _OptionRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
-            Icon(icon, color: _CreatePostColors.onSurfaceVariant, size: 24),
+            Icon(icon, color: AppTheme.onSurfaceVariant, size: 24),
             const SizedBox(width: 16),
             Text(
               label,
               style: const TextStyle(
                 fontSize: 15,
-                color: _CreatePostColors.onSurface,
+                color: AppTheme.onSurface,
               ),
             ),
             const Spacer(),

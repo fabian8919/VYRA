@@ -1,34 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:vyra/features/auth/presentation/screens/register_screen.dart';
 import 'package:vyra/services/auth_service.dart';
-
-// Colores exactos de la imagen de referencia
-class _LoginColors {
-  // Fondo principal - lavanda muy claro
-  static const Color background = Color(0xFFF0F0FF);
-  
-  // Surface colors - lavanda claro para la tarjeta
-  static const Color surfaceContainer = Color(0xFFE8E8FF);
-  static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
-
-  // Primary colors
-  static const Color primary = Color(0xFF2563EB);
-  static const Color onSurface = Color(0xFF292B51);
-  static const Color onSurfaceVariant = Color(0xFF565881);
-  static const Color outline = Color(0xFF71739E);
-  static const Color outlineVariant = Color(0xFFC4C4E0);
-
-  // Gradient button - azul vibrante
-  static const LinearGradient vibrantBlue = LinearGradient(
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
-    colors: [
-      Color(0xFF1D4ED8),
-      Color(0xFF3B82F6),
-    ],
-  );
-}
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -96,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _LoginColors.background,
+      backgroundColor: AppTheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -148,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontSize: 48,
                     fontWeight: FontWeight.w800,
                     fontStyle: FontStyle.italic,
-                    color: _LoginColors.primary,
+                    color: AppTheme.primaryBlue,
                     letterSpacing: -1,
                   ),
                 ),
@@ -161,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
-                    color: _LoginColors.onSurfaceVariant,
+                    color: AppTheme.onSurfaceVariant,
                     letterSpacing: 0.3,
                   ),
                 ),
@@ -172,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.all(28),
                   decoration: BoxDecoration(
-                    color: _LoginColors.surfaceContainer,
+                    color: AppTheme.surfaceContainer,
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: Form(
@@ -218,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: const Text(
                                 '¿Olvidaste tu contraseña?',
                                 style: TextStyle(
-                                  color: _LoginColors.primary,
+                                  color: AppTheme.primaryBlue,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -259,7 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: double.infinity,
                             height: 54,
                             decoration: BoxDecoration(
-                              gradient: _LoginColors.vibrantBlue,
+                              gradient: AppTheme.buttonGradient,
                               borderRadius: BorderRadius.circular(28),
                               boxShadow: [
                                 BoxShadow(
@@ -311,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Expanded(
                               child: Container(
                                 height: 1,
-                                color: _LoginColors.outlineVariant.withAlpha(100),
+                                color: AppTheme.outlineVariant.withAlpha(100),
                               ),
                             ),
                             Padding(
@@ -319,7 +293,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Text(
                                 'O CONTINÚA CON',
                                 style: TextStyle(
-                                  color: _LoginColors.onSurfaceVariant,
+                                  color: AppTheme.onSurfaceVariant,
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: 1,
@@ -329,7 +303,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Expanded(
                               child: Container(
                                 height: 1,
-                                color: _LoginColors.outlineVariant.withAlpha(100),
+                                color: AppTheme.outlineVariant.withAlpha(100),
                               ),
                             ),
                           ],
@@ -375,7 +349,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Text(
                       '¿No tienes una cuenta? ',
                       style: TextStyle(
-                        color: _LoginColors.onSurfaceVariant,
+                        color: AppTheme.onSurfaceVariant,
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                       ),
@@ -391,7 +365,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: const Text(
                         'Regístrate ahora',
                         style: TextStyle(
-                          color: _LoginColors.primary,
+                          color: AppTheme.primaryBlue,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
@@ -406,7 +380,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const Text(
                   '© 2024 VYRA APP INC.',
                   style: TextStyle(
-                    color: _LoginColors.outline,
+                    color: AppTheme.outline,
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.5,
@@ -440,7 +414,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Text(
       text,
       style: const TextStyle(
-        color: _LoginColors.onSurfaceVariant,
+        color: AppTheme.onSurfaceVariant,
         fontSize: 12,
         fontWeight: FontWeight.w700,
         letterSpacing: 1,
@@ -465,16 +439,16 @@ class _LoginScreenState extends State<LoginScreen> {
       validator: validator,
       style: const TextStyle(
         fontSize: 15,
-        color: _LoginColors.onSurface,
+        color: AppTheme.onSurface,
       ),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(
-          color: _LoginColors.outline.withAlpha(150),
+          color: AppTheme.outline.withAlpha(150),
           fontSize: 15,
         ),
         filled: true,
-        fillColor: _LoginColors.surfaceContainerLowest,
+        fillColor: AppTheme.surfaceContainerLowest,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -486,7 +460,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: _LoginColors.primary, width: 2),
+          borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -494,7 +468,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         prefixIcon: Icon(
           prefixIcon,
-          color: _LoginColors.outline,
+          color: AppTheme.outline,
           size: 20,
         ),
         suffixIcon: suffixIcon != null
@@ -502,7 +476,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onTap: onSuffixTap,
                 child: Icon(
                   suffixIcon,
-                  color: _LoginColors.outline.withAlpha(180),
+                  color: AppTheme.outline.withAlpha(180),
                   size: 20,
                 ),
               )
@@ -522,10 +496,10 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Container(
         height: 46,
         decoration: BoxDecoration(
-          color: isGoogle ? _LoginColors.surfaceContainerLowest : const Color(0xFF1877F2),
+          color: isGoogle ? AppTheme.surfaceContainerLowest : const Color(0xFF1877F2),
           borderRadius: BorderRadius.circular(24),
           border: isGoogle
-              ? Border.all(color: _LoginColors.outlineVariant.withAlpha(50))
+              ? Border.all(color: AppTheme.outlineVariant.withAlpha(50))
               : null,
         ),
         child: Row(
@@ -552,7 +526,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Text(
               label,
               style: TextStyle(
-                color: isGoogle ? _LoginColors.onSurface : Colors.white,
+                color: isGoogle ? AppTheme.onSurface : Colors.white,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
@@ -569,7 +543,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Text(
         text,
         style: const TextStyle(
-          color: _LoginColors.onSurfaceVariant,
+          color: AppTheme.onSurfaceVariant,
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),

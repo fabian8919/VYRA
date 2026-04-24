@@ -13,6 +13,20 @@ class AuthService {
   // Verificar si hay sesión activa
   bool get isAuthenticated => currentUser != null;
 
+  // Obtener perfil del usuario desde public.profiles
+  Future<Map<String, dynamic>?> getProfile(String userId) async {
+    try {
+      final response = await _supabase
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .maybeSingle();
+      return response;
+    } catch (e) {
+      throw Exception('Error al obtener perfil: $e');
+    }
+  }
+
   // Registro con email y contraseña
   Future<AuthResponse> signUpWithEmail({
     required String email,
@@ -73,18 +87,40 @@ class AuthService {
     }
   }
 
-  // Actualizar perfil de usuario
-  Future<void> updateProfile({String? name, String? avatarUrl}) async {
+  // Actualizar perfil en public.profiles (upsert: inserta si no existe)
+  Future<void> updateProfile({
+    String? name,
+    String? bio,
+    String? avatarUrl,
+  }) async {
     try {
-      final updates = <String, dynamic>{};
-      if (name != null) updates['full_name'] = name;
+      final user = currentUser;
+      if (user == null) {
+        throw Exception('No hay sesión activa');
+      }
+
+      final updates = <String, dynamic>{'id': user.id};
+
+      if (name != null) updates['username'] = name;
+      if (bio != null) updates['bio'] = bio;
       if (avatarUrl != null) updates['avatar_url'] = avatarUrl;
 
-      await _supabase.auth.updateUser(UserAttributes(data: updates));
+      await _supabase.from('profiles').upsert(updates);
+    } catch (e) {
+      throw Exception('Error al actualizar perfil: $e');
+    }
+  }
+
+  // Actualizar nombre completo en auth.user_metadata
+  Future<void> updateDisplayName(String name) async {
+    try {
+      await _supabase.auth.updateUser(
+        UserAttributes(data: {'full_name': name}),
+      );
     } on AuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
-      throw Exception('Error al actualizar perfil: $e');
+      throw Exception('Error al actualizar nombre: $e');
     }
   }
 
