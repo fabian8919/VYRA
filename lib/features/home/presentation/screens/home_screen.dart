@@ -3,6 +3,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/features/home/presentation/widgets/comments_bottom_sheet.dart';
 import 'package:vyra/features/profile/presentation/screens/profile_screen.dart';
+import 'package:vyra/features/profile/presentation/screens/profile_unknown_screen.dart';
 import 'package:vyra/features/search/presentation/screens/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Map<String, dynamic>> _posts = [
     {
+      'userId': '11111111-1111-1111-1111-111111111111',
       'username': '@photography_lover',
       'avatar': 'P',
       'title': 'Atardecer en la playa de Cartagena 🌅',
@@ -29,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'timeAgo': '2h',
     },
     {
+      'userId': '22222222-2222-2222-2222-222222222222',
       'username': '@nature_wild',
       'avatar': 'N',
       'title': 'Bosque encantado en la Amazonía',
@@ -39,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'timeAgo': '4h',
     },
     {
+      'userId': '33333333-3333-3333-3333-333333333333',
       'username': '@city_explorer',
       'avatar': 'C',
       'title': 'Arquitectura moderna en Medellín',
@@ -49,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'timeAgo': '6h',
     },
     {
+      'userId': '44444444-4444-4444-4444-444444444444',
       'username': '@portrait_master',
       'avatar': 'M',
       'title': 'Retrato natural con luz dorada ✨',
@@ -59,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'timeAgo': '8h',
     },
     {
+      'userId': '55555555-5555-5555-5555-555555555555',
       'username': '@mountain_hiker',
       'avatar': 'H',
       'title': 'Caminata en los Andes colombianos',
@@ -219,51 +225,66 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Usuario con botón Seguir
                   Row(
                     children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          gradient: AppTheme.buttonGradient,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withAlpha(128),
-                            width: 2,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            post['avatar'],
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ProfileUnknownScreen(
+                                userId: (post['userId'] as String?) ?? '',
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          );
+                        },
+                        child: Row(
                           children: [
-                            Text(
-                              post['username'],
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                gradient: AppTheme.buttonGradient,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.white.withAlpha(128),
+                                  width: 2,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  post['avatar'],
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
-                            Text(
-                              post['timeAgo'],
-                              style: TextStyle(
-                                color: Colors.white.withAlpha(180),
-                                fontSize: 12,
-                              ),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  post['username'],
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(
+                                  post['timeAgo'],
+                                  style: TextStyle(
+                                    color: Colors.white.withAlpha(180),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
+                      const Spacer(),
                       // Botón Seguir estilo pill
                       GestureDetector(
                         onTap: () => _toggleFollow(post['username']),
