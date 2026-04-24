@@ -205,12 +205,10 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
         child: CustomScrollView(
           controller: _scrollController,
           slivers: [
-            // Header con gradiente
+            // Header
             SliverToBoxAdapter(
               child: Container(
-                decoration: const BoxDecoration(
-                  gradient: AppTheme.backgroundGradient,
-                ),
+                color: AppTheme.background,
                 child: Column(
                   children: [
                     // AppBar

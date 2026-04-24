@@ -279,12 +279,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: CustomScrollView(
           controller: _scrollController,
           slivers: [
-            // Header con gradiente
+            // Header
             SliverToBoxAdapter(
               child: Container(
-                decoration: const BoxDecoration(
-                  gradient: AppTheme.backgroundGradient,
-                ),
+                color: AppTheme.background,
                 child: Column(
                   children: [
                     // AppBar
