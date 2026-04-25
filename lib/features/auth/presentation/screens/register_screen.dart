@@ -68,7 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         child: Container(
-          padding: const EdgeInsets.all(32),
+          padding: EdgeInsets.all(32),
           decoration: BoxDecoration(
             color: Colors.white.withAlpha(245),
             borderRadius: BorderRadius.circular(28),
@@ -85,10 +85,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: AppTheme.buttonShadow,
                 ),
-                child: const Icon(Icons.check, color: Colors.white, size: 40),
+                child: Icon(Icons.check, color: Colors.white, size: 40),
               ),
-              const SizedBox(height: 24),
-              const Text(
+              SizedBox(height: 24),
+              Text(
                 '¡Bienvenido a Vyra!',
                 style: TextStyle(
                   fontSize: 24,
@@ -96,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   color: AppTheme.textPrimary,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 'Tu cuenta está lista. Comienza a descubrir imágenes increíbles.',
                 textAlign: TextAlign.center,
@@ -106,7 +106,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 1.5,
                 ),
               ),
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
               GestureDetector(
                 onTap: () {
                   Navigator.of(context).pop();
@@ -120,7 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: AppTheme.buttonShadow,
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Comenzar',
                       style: TextStyle(
@@ -145,15 +145,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.error_outline, color: Colors.white),
-            const SizedBox(width: 12),
+            Icon(Icons.error_outline, color: Colors.white),
+            SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
         backgroundColor: Colors.red.shade400,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
+        margin: EdgeInsets.all(16),
       ),
     );
   }
@@ -164,11 +164,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: AppTheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // Botón volver
               GestureDetector(
@@ -181,7 +181,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppTheme.outlineVariant, width: 1),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_back_ios_new,
                     color: AppTheme.onSurfaceVariant,
                     size: 18,
@@ -189,10 +189,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Título
-              const Text(
+              Text(
                 'Crea tu\ncuenta',
                 style: TextStyle(
                   fontSize: 36,
@@ -202,17 +202,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 1.2,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 'Únete a la comunidad de creadores visuales.',
                 style: TextStyle(fontSize: 16, color: AppTheme.onSurfaceVariant),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // Formulario
               Container(
-                padding: const EdgeInsets.all(28),
+                padding: EdgeInsets.all(28),
                 decoration: BoxDecoration(
                   color: AppTheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(24),
@@ -224,7 +224,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       // Nombre
                       _buildLabel('NOMBRE DE USUARIO'),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       _buildTextField(
                         controller: _nameController,
                         hintText: 'Tu nombre',
@@ -241,11 +241,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Email
                       _buildLabel('CORREO ELECTRÓNICO'),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       _buildTextField(
                         controller: _emailController,
                         hintText: 'tu@ejemplo.com',
@@ -262,11 +262,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Contraseña
                       _buildLabel('CONTRASEÑA'),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       _buildTextField(
                         controller: _passwordController,
                         hintText: '••••••••',
@@ -289,11 +289,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Confirmar contraseña
                       _buildLabel('CONFIRMAR CONTRASEÑA'),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       _buildTextField(
                         controller: _confirmPasswordController,
                         hintText: '••••••••',
@@ -319,7 +319,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Términos
                       Row(
@@ -346,7 +346,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ),
                               child: _acceptTerms
-                                  ? const Icon(
+                                  ? Icon(
                                       Icons.check,
                                       color: Colors.white,
                                       size: 16,
@@ -354,7 +354,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   : null,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           Expanded(
                             child: RichText(
                               text: TextSpan(
@@ -363,7 +363,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   color: AppTheme.onSurfaceVariant,
                                   fontSize: 14,
                                 ),
-                                children: const [
+                                children: [
                                   TextSpan(
                                     text: 'Términos',
                                     style: TextStyle(
@@ -391,7 +391,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ],
                       ),
 
-                      const SizedBox(height: 28),
+                      SizedBox(height: 28),
 
                       // Botón crear cuenta
                       GestureDetector(
@@ -404,15 +404,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             borderRadius: BorderRadius.circular(27),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF2563EB).withAlpha(60),
+                                color: Color(0xFF2563EB).withAlpha(60),
                                 blurRadius: 16,
-                                offset: const Offset(0, 6),
+                                offset: Offset(0, 6),
                               ),
                             ],
                           ),
                           child: Center(
                             child: _isLoading
-                                ? const SizedBox(
+                                ? SizedBox(
                                     height: 24,
                                     width: 24,
                                     child: CircularProgressIndicator(
@@ -422,7 +422,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       strokeWidth: 2.5,
                                     ),
                                   )
-                                : const Row(
+                                : Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
@@ -450,7 +450,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Login link
               Center(
@@ -466,7 +466,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     GestureDetector(
                       onTap: () => Navigator.of(context).pop(),
-                      child: const Text(
+                      child: Text(
                         'Entrar',
                         style: TextStyle(
                           color: AppTheme.primaryBlue,
@@ -479,7 +479,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         ),
@@ -490,7 +490,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         color: AppTheme.onSurfaceVariant,
         fontSize: 12,
         fontWeight: FontWeight.w700,
@@ -514,13 +514,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       keyboardType: keyboardType,
       obscureText: obscureText,
       validator: validator,
-      style: const TextStyle(fontSize: 15, color: AppTheme.onSurface),
+      style: TextStyle(fontSize: 15, color: AppTheme.onSurface),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(color: AppTheme.outline.withAlpha(150), fontSize: 15),
         filled: true,
         fillColor: AppTheme.surfaceContainerLowest,
-        contentPadding: const EdgeInsets.symmetric(
+        contentPadding: EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
         ),
@@ -534,11 +534,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
+          borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFB41340), width: 1),
+          borderSide: BorderSide(color: Color(0xFFB41340), width: 1),
         ),
         prefixIcon: Icon(prefixIcon, color: AppTheme.outline, size: 20),
         suffixIcon: suffixIcon != null

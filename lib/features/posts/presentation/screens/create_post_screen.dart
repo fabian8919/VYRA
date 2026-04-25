@@ -102,13 +102,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -120,8 +120,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Text(
+                SizedBox(height: 20),
+                Text(
                   'Agregar foto',
                   style: TextStyle(
                     fontSize: 20,
@@ -129,7 +129,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     color: AppTheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 _ImageSourceOption(
                   icon: Icons.camera_alt,
                   label: 'Cámara',
@@ -139,7 +139,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     _pickImage(ImageSource.camera);
                   },
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _ImageSourceOption(
                   icon: Icons.photo_library,
                   label: 'Galería',
@@ -149,7 +149,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     _pickImage(ImageSource.gallery);
                   },
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
               ],
             ),
           ),
@@ -164,14 +164,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     setState(() => _isLoading = true);
 
     // Simular publicación
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 2));
 
     if (mounted) {
       setState(() => _isLoading = false);
       Navigator.pop(context);
       
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Publicación creada exitosamente'),
           backgroundColor: Colors.green,
         ),
@@ -187,10 +187,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: AppTheme.onSurface),
+          icon: Icon(Icons.close, color: AppTheme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Nueva publicación',
           style: TextStyle(
             color: AppTheme.onSurface,
@@ -202,7 +202,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           TextButton(
             onPressed: _selectedImages.isEmpty || _isLoading ? null : _publishPost,
             child: _isLoading
-                ? const SizedBox(
+                ? SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
@@ -255,7 +255,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 }
                                 return Container(
                                   color: Colors.grey.shade200,
-                                  child: const Center(
+                                  child: Center(
                                     child: CircularProgressIndicator(),
                                   ),
                                 );
@@ -274,7 +274,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                               top: 16,
                               right: 16,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   horizontal: 12,
                                   vertical: 6,
                                 ),
@@ -284,7 +284,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 ),
                                 child: Text(
                                   '${_currentImageIndex + 1}/${_selectedImages.length}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -298,12 +298,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                             child: GestureDetector(
                               onTap: () => _removeImage(_currentImageIndex),
                               child: Container(
-                                padding: const EdgeInsets.all(8),
+                                padding: EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                   color: Colors.black.withAlpha(153),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.delete_outline,
                                   color: Colors.white,
                                   size: 20,
@@ -328,7 +328,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                               size: 80,
                               color: Colors.grey.shade400,
                             ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: 16),
                             Text(
                               'Selecciona una o más fotos',
                               style: TextStyle(
@@ -344,11 +344,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   // Botón agregar más fotos
                   if (_selectedImages.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16),
                       child: GestureDetector(
                         onTap: _showImageSourceDialog,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding: EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
                             border: Border.all(color: AppTheme.outlineVariant),
                             borderRadius: BorderRadius.circular(12),
@@ -360,7 +360,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 Icons.add_circle_outline,
                                 color: AppTheme.primaryBlue,
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Text(
                                 'Agregar más fotos',
                                 style: TextStyle(
@@ -377,12 +377,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             // Sección de descripción
             Container(
               color: Colors.white,
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -393,12 +393,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
+                          gradient: LinearGradient(
                             colors: [Color(0xFF2563EB), Color(0xFF3B82F6)],
                           ),
                           borderRadius: BorderRadius.circular(22),
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text(
                             'A',
                             style: TextStyle(
@@ -409,8 +409,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      const Text(
+                      SizedBox(width: 12),
+                      Text(
                         'andres_f',
                         style: TextStyle(
                           fontSize: 16,
@@ -421,7 +421,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Campo de descripción
                   TextField(
@@ -441,14 +441,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         fontSize: 12,
                       ),
                     ),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       color: AppTheme.onSurface,
                       height: 1.5,
                     ),
                   ),
 
-                  const Divider(height: 32),
+                  Divider(height: 32),
 
                   // Opciones adicionales
                   _OptionRow(
@@ -470,7 +470,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
           ],
         ),
       ),
@@ -478,8 +478,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           ? FloatingActionButton.extended(
               onPressed: _showImageSourceDialog,
               backgroundColor: AppTheme.primaryBlue,
-              icon: const Icon(Icons.add_photo_alternate),
-              label: const Text('Agregar foto'),
+              icon: Icon(Icons.add_photo_alternate),
+              label: Text('Agregar foto'),
             )
           : null,
     );
@@ -509,9 +509,9 @@ class _ImageSourceOption extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFF0F0FF),
+          color: Color(0xFFF0F0FF),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -520,27 +520,27 @@ class _ImageSourceOption extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [Color(0xFF2563EB), Color(0xFF3B82F6)],
                 ),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(icon, color: Colors.white, size: 28),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
                       color: AppTheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     description,
                     style: TextStyle(
@@ -579,19 +579,19 @@ class _OptionRow extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
             Icon(icon, color: AppTheme.onSurfaceVariant, size: 24),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 color: AppTheme.onSurface,
               ),
             ),
-            const Spacer(),
+            Spacer(),
             Icon(
               Icons.arrow_forward_ios,
               color: Colors.grey.shade400,

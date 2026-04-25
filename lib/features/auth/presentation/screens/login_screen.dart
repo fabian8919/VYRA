@@ -52,17 +52,17 @@ class _LoginScreenState extends State<LoginScreen> {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.error_outline, color: Colors.white),
-            const SizedBox(width: 12),
+            Icon(Icons.error_outline, color: Colors.white),
+            SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: const Color(0xFFB41340),
+        backgroundColor: Color(0xFFB41340),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        margin: const EdgeInsets.all(16),
+        margin: EdgeInsets.all(16),
       ),
     );
   }
@@ -74,10 +74,10 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               children: [
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
 
                 // Logo circular con imagen de onda azul
                 Container(
@@ -87,15 +87,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF004EDB).withAlpha(30),
+                        color: Color(0xFF004EDB).withAlpha(30),
                         blurRadius: 20,
-                        offset: const Offset(0, 8),
+                        offset: Offset(0, 8),
                       ),
                     ],
                   ),
                   child: ClipOval(
                     child: Container(
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -106,17 +106,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       child: CustomPaint(
-                        size: const Size(100, 100),
+                        size: Size(100, 100),
                         painter: WavePainter(),
                       ),
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // Nombre de la app - Vyra en azul cursiva
-                const Text(
+                Text(
                   'Vyra',
                   style: TextStyle(
                     fontSize: 48,
@@ -127,10 +127,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
 
                 // Tagline
-                const Text(
+                Text(
                   'Descubre. Inspírate. Comparte.',
                   style: TextStyle(
                     fontSize: 15,
@@ -140,11 +140,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
 
                 // Card del formulario
                 Container(
-                  padding: const EdgeInsets.all(28),
+                  padding: EdgeInsets.all(28),
                   decoration: BoxDecoration(
                     color: AppTheme.surfaceContainer,
                     borderRadius: BorderRadius.circular(24),
@@ -156,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         // Email label
                         _buildLabel('CORREO ELECTRÓNICO'),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10),
                         // Email input
                         _buildTextField(
                           controller: _emailController,
@@ -174,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
 
-                        const SizedBox(height: 24),
+                        SizedBox(height: 24),
 
                         // Password row con label y link
                         Row(
@@ -185,11 +185,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => const ForgotPasswordScreen(),
+                                    builder: (_) => ForgotPasswordScreen(),
                                   ),
                                 );
                               },
-                              child: const Text(
+                              child: Text(
                                 '¿Olvidaste tu contraseña?',
                                 style: TextStyle(
                                   color: AppTheme.primaryBlue,
@@ -200,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10),
                         // Password input
                         _buildTextField(
                           controller: _passwordController,
@@ -224,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
 
-                        const SizedBox(height: 28),
+                        SizedBox(height: 28),
 
                         // Botón entrar
                         GestureDetector(
@@ -237,15 +237,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(28),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF2563EB).withAlpha(60),
+                                  color: Color(0xFF2563EB).withAlpha(60),
                                   blurRadius: 16,
-                                  offset: const Offset(0, 6),
+                                  offset: Offset(0, 6),
                                 ),
                               ],
                             ),
                             child: Center(
                               child: _isLoading
-                                  ? const SizedBox(
+                                  ? SizedBox(
                                       height: 24,
                                       width: 24,
                                       child: CircularProgressIndicator(
@@ -253,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         strokeWidth: 2.5,
                                       ),
                                     )
-                                  : const Row(
+                                  : Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Text(
@@ -277,7 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 24),
+                        SizedBox(height: 24),
 
                         // Separador
                         Row(
@@ -289,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding: EdgeInsets.symmetric(horizontal: 16),
                               child: Text(
                                 'O CONTINÚA CON',
                                 style: TextStyle(
@@ -309,7 +309,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20),
 
                         // Botones sociales
                         Row(
@@ -323,7 +323,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onTap: () {},
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12),
                             // Facebook
                             Expanded(
                               child: _buildSocialButton(
@@ -340,13 +340,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
 
                 // Registro
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       '¿No tienes una cuenta? ',
                       style: TextStyle(
                         color: AppTheme.onSurfaceVariant,
@@ -358,11 +358,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => const RegisterScreen(),
+                            builder: (_) => RegisterScreen(),
                           ),
                         );
                       },
-                      child: const Text(
+                      child: Text(
                         'Regístrate ahora',
                         style: TextStyle(
                           color: AppTheme.primaryBlue,
@@ -374,10 +374,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
 
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
 
                 // Footer
-                const Text(
+                Text(
                   '© 2024 VYRA APP INC.',
                   style: TextStyle(
                     color: AppTheme.outline,
@@ -387,21 +387,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
 
                 // Links footer
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildFooterLink('Privacidad'),
-                    const SizedBox(width: 24),
+                    SizedBox(width: 24),
                     _buildFooterLink('Términos'),
-                    const SizedBox(width: 24),
+                    SizedBox(width: 24),
                     _buildFooterLink('Soporte'),
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
               ],
             ),
           ),
@@ -413,7 +413,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         color: AppTheme.onSurfaceVariant,
         fontSize: 12,
         fontWeight: FontWeight.w700,
@@ -437,7 +437,7 @@ class _LoginScreenState extends State<LoginScreen> {
       keyboardType: keyboardType,
       obscureText: obscureText,
       validator: validator,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 15,
         color: AppTheme.onSurface,
       ),
@@ -449,7 +449,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         filled: true,
         fillColor: AppTheme.surfaceContainerLowest,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -460,11 +460,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
+          borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFB41340), width: 1),
+          borderSide: BorderSide(color: Color(0xFFB41340), width: 1),
         ),
         prefixIcon: Icon(
           prefixIcon,
@@ -496,7 +496,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Container(
         height: 46,
         decoration: BoxDecoration(
-          color: isGoogle ? AppTheme.surfaceContainerLowest : const Color(0xFF1877F2),
+          color: isGoogle ? AppTheme.surfaceContainerLowest : Color(0xFF1877F2),
           borderRadius: BorderRadius.circular(24),
           border: isGoogle
               ? Border.all(color: AppTheme.outlineVariant.withAlpha(50))
@@ -509,20 +509,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 ? Container(
                     width: 20,
                     height: 20,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
                     ),
                     child: CustomPaint(
-                      size: const Size(20, 20),
+                      size: Size(20, 20),
                       painter: GoogleLogoPainter(),
                     ),
                   )
-                : const Icon(
+                : Icon(
                     Icons.facebook,
                     color: Colors.white,
                     size: 20,
                   ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               label,
               style: TextStyle(
@@ -542,7 +542,7 @@ class _LoginScreenState extends State<LoginScreen> {
       onTap: () {},
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           color: AppTheme.onSurfaceVariant,
           fontSize: 12,
           fontWeight: FontWeight.w500,
@@ -616,7 +616,7 @@ class GoogleLogoPainter extends CustomPainter {
     final radius = size.width / 2 - 1;
     
     // Círculo rojo (arriba)
-    final redPaint = Paint()..color = const Color(0xFFEA4335);
+    final redPaint = Paint()..color = Color(0xFFEA4335);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       -0.8,
@@ -626,7 +626,7 @@ class GoogleLogoPainter extends CustomPainter {
     );
     
     // Círculo verde (abajo derecha)
-    final greenPaint = Paint()..color = const Color(0xFF34A853);
+    final greenPaint = Paint()..color = Color(0xFF34A853);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       0.8,
@@ -636,7 +636,7 @@ class GoogleLogoPainter extends CustomPainter {
     );
     
     // Círculo azul (abajo izquierda)
-    final bluePaint = Paint()..color = const Color(0xFF4285F4);
+    final bluePaint = Paint()..color = Color(0xFF4285F4);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       2.5,
@@ -646,7 +646,7 @@ class GoogleLogoPainter extends CustomPainter {
     );
     
     // Amarillo (parte del medio)
-    final yellowPaint = Paint()..color = const Color(0xFFFBBC05);
+    final yellowPaint = Paint()..color = Color(0xFFFBBC05);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       -2.5,

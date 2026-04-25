@@ -185,7 +185,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoadingProfile) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppTheme.background,
         body: Center(
           child: CircularProgressIndicator(color: AppTheme.primaryBlue),
@@ -213,7 +213,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                   children: [
                     // AppBar
                     Padding(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 8,
                         vertical: 8,
                       ),
@@ -223,7 +223,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                           IconButton(
                             onPressed: () => Navigator.of(context).pop(),
                             icon: Container(
-                              padding: const EdgeInsets.all(8),
+                              padding: EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: AppTheme.surfaceContainerLowest,
                                 borderRadius: BorderRadius.circular(12),
@@ -234,13 +234,13 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                                   ),
                                 ],
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.arrow_back,
                                 color: AppTheme.onSurfaceVariant,
                               ),
                             ),
                           ),
-                          const SizedBox.shrink(),
+                          SizedBox.shrink(),
                         ],
                       ),
                     ),
@@ -269,12 +269,12 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     // Nombre completo
                     Text(
                       fullName ?? nickName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppTheme.onSurface,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -283,25 +283,25 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
 
                     if (fullName != null && fullName.isNotEmpty)
                       Padding(
-                        padding: const EdgeInsets.only(top: 4),
+                        padding: EdgeInsets.only(top: 4),
                         child: Text(
                           nickName,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.onSurfaceVariant,
                             fontSize: 16,
                           ),
                         ),
                       ),
 
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     // Bio
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      padding: EdgeInsets.symmetric(horizontal: 32),
                       child: Text(
                         userBio,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppTheme.onSurfaceVariant,
                           fontSize: 14,
                           height: 1.5,
@@ -309,7 +309,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
 
                   ],
@@ -320,8 +320,8 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
             // Stats Card - Diseño proporcionado
             SliverToBoxAdapter(
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                margin: EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                 decoration: BoxDecoration(
                   color: AppTheme.surfaceContainerLowest,
                   borderRadius: BorderRadius.circular(20),
@@ -357,7 +357,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                       ],
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(vertical: 16),
                       child: Divider(
                         height: 1,
                         color: AppTheme.outlineVariant.withAlpha(100),
@@ -367,7 +367,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                     Row(
                       children: [
                         // Espacio vacío a la izquierda (1/6 del ancho)
-                        const Expanded(flex: 1, child: SizedBox()),
+                        Expanded(flex: 1, child: SizedBox()),
                         // Seguidores (2/6 = 1/3 del ancho)
                         Expanded(
                           flex: 2,
@@ -390,7 +390,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                           ),
                         ),
                         // Espacio vacío a la derecha (1/6 del ancho)
-                        const Expanded(flex: 1, child: SizedBox()),
+                        Expanded(flex: 1, child: SizedBox()),
                       ],
                     ),
                   ],
@@ -398,12 +398,12 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
               ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+            SliverToBoxAdapter(child: SizedBox(height: 20)),
 
             // Tabs
             SliverToBoxAdapter(
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24),
+                margin: EdgeInsets.symmetric(horizontal: 24),
                 decoration: BoxDecoration(
                   color: AppTheme.surfaceContainerLowest,
                   borderRadius: BorderRadius.circular(16),
@@ -414,7 +414,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                       child: GestureDetector(
                         onTap: () => setState(() => _isGridView = true),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          padding: EdgeInsets.symmetric(vertical: 14),
                           decoration: BoxDecoration(
                             gradient: _isGridView
                                 ? AppTheme.buttonGradient
@@ -435,7 +435,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                       child: GestureDetector(
                         onTap: () => setState(() => _isGridView = false),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          padding: EdgeInsets.symmetric(vertical: 14),
                           decoration: BoxDecoration(
                             gradient: !_isGridView
                                 ? AppTheme.buttonGradient
@@ -457,13 +457,13 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
               ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+            SliverToBoxAdapter(child: SizedBox(height: 20)),
 
             // Grid de imágenes
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: 24),
               sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
@@ -475,7 +475,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
               ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 40)),
+            SliverToBoxAdapter(child: SizedBox(height: 40)),
           ],
         ),
       ),
@@ -488,7 +488,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
         userName.toString().isNotEmpty
             ? userName.toString()[0].toUpperCase()
             : 'U',
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
           fontSize: 48,
           fontWeight: FontWeight.bold,
@@ -501,19 +501,19 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
     return Column(
       children: [
         Icon(icon, color: AppTheme.primaryBlue, size: 22),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.onSurface,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(color: AppTheme.outline, fontSize: 12),
+          style: TextStyle(color: AppTheme.outline, fontSize: 12),
         ),
       ],
     );
@@ -529,23 +529,23 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Column(
           children: [
             Icon(icon, color: AppTheme.primaryBlue, size: 22),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.onSurface,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 2),
+            SizedBox(height: 2),
             Text(
               label,
-              style: const TextStyle(color: AppTheme.outline, fontSize: 12),
+              style: TextStyle(color: AppTheme.outline, fontSize: 12),
             ),
           ],
         ),
@@ -567,7 +567,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
             BoxShadow(
               color: AppTheme.outlineVariant.withAlpha(100),
               blurRadius: 10,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ],
         ),
@@ -583,7 +583,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                   if (loadingProgress == null) return child;
                   return Container(
                     color: Colors.grey.shade100,
-                    child: const Center(
+                    child: Center(
                       child: CircularProgressIndicator(
                         color: AppTheme.primaryBlue,
                         strokeWidth: 2,
@@ -597,7 +597,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 10,
                   ),
@@ -611,26 +611,26 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.favorite, color: Colors.white, size: 14),
-                      const SizedBox(width: 4),
+                      Icon(Icons.favorite, color: Colors.white, size: 14),
+                      SizedBox(width: 4),
                       Text(
                         _formatNumber(post['likes'] ?? 0),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      const Icon(
+                      SizedBox(width: 12),
+                      Icon(
                         Icons.visibility,
                         color: Colors.white,
                         size: 14,
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Text(
                         _formatNumber(post['views'] ?? 0),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -740,14 +740,14 @@ class _UsersListModalState extends State<UsersListModal> {
       maxChildSize: 0.95,
       builder: (context, scrollController) {
         return Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
           ),
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border(
@@ -764,16 +764,16 @@ class _UsersListModalState extends State<UsersListModal> {
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Text(
                       widget.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppTheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       ' ',
                       style: TextStyle(
@@ -785,7 +785,7 @@ class _UsersListModalState extends State<UsersListModal> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border(
@@ -793,7 +793,7 @@ class _UsersListModalState extends State<UsersListModal> {
                   ),
                 ),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(12),
@@ -811,11 +811,11 @@ class _UsersListModalState extends State<UsersListModal> {
                         Icons.search,
                         color: Colors.grey.shade500,
                       ),
-                      prefixIconConstraints: const BoxConstraints(
+                      prefixIconConstraints: BoxConstraints(
                         minWidth: 40,
                       ),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                      contentPadding: EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
@@ -831,7 +831,7 @@ class _UsersListModalState extends State<UsersListModal> {
                               size: 64,
                               color: Colors.grey.shade300,
                             ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: 16),
                             Text(
                               'No se encontraron usuarios',
                               style: TextStyle(
@@ -844,7 +844,7 @@ class _UsersListModalState extends State<UsersListModal> {
                       )
                     : ListView.builder(
                         controller: scrollController,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        padding: EdgeInsets.symmetric(vertical: 8),
                         itemCount: _filteredUsers.length,
                         itemBuilder: (context, index) {
                           final user = _filteredUsers[index];
@@ -886,14 +886,14 @@ class _UserListItem extends StatelessWidget {
     return InkWell(
       onTap: () {},
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
             Container(
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [Color(0xFF2563EB), Color(0xFF3B82F6)],
                 ),
                 borderRadius: BorderRadius.circular(26),
@@ -901,7 +901,7 @@ class _UserListItem extends StatelessWidget {
               child: Center(
                 child: Text(
                   avatar,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -909,20 +909,20 @@ class _UserListItem extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     username,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: AppTheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     name,
                     style: TextStyle(
@@ -936,9 +936,9 @@ class _UserListItem extends StatelessWidget {
             GestureDetector(
               onTap: onFollowToggle,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 decoration: BoxDecoration(
-                  color: isFollowing ? Colors.transparent : const Color(0xFF2563EB),
+                  color: isFollowing ? Colors.transparent : Color(0xFF2563EB),
                   borderRadius: BorderRadius.circular(8),
                   border: isFollowing
                       ? Border.all(color: Colors.grey.shade300)

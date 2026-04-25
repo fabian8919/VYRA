@@ -82,7 +82,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0D1A),
+      backgroundColor: AppTheme.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -127,7 +127,7 @@ class _SearchScreenState extends State<SearchScreen> {
           // Back button
           IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+            icon: Icon(Icons.arrow_back_ios_new, color: AppTheme.textPrimary, size: 20),
           ),
 
           // Search field
@@ -135,23 +135,23 @@ class _SearchScreenState extends State<SearchScreen> {
             child: Container(
               height: 42,
               decoration: BoxDecoration(
-                color: Colors.white.withAlpha(20),
+                color: AppTheme.textPrimary.withAlpha(20),
                 borderRadius: BorderRadius.circular(22),
               ),
               child: TextField(
                 controller: _searchController,
                 focusNode: _focusNode,
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+                style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
                 cursorColor: AppTheme.primaryBlue,
                 decoration: InputDecoration(
                   hintText: 'Buscar usuarios, fotos, tags...',
                   hintStyle: TextStyle(
-                    color: Colors.white.withAlpha(90),
+                    color: AppTheme.textLight,
                     fontSize: 14,
                   ),
                   prefixIcon: Icon(
                     Icons.search,
-                    color: Colors.white.withAlpha(90),
+                    color: AppTheme.textLight,
                     size: 20,
                   ),
                   suffixIcon: _query.isNotEmpty
@@ -159,7 +159,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           onTap: () => _searchController.clear(),
                           child: Icon(
                             Icons.close,
-                            color: Colors.white.withAlpha(90),
+                            color: AppTheme.textLight,
                             size: 18,
                           ),
                         )
@@ -187,8 +187,8 @@ class _SearchScreenState extends State<SearchScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: AppTheme.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
@@ -219,12 +219,12 @@ class _SearchScreenState extends State<SearchScreen> {
           dense: true,
           leading: Icon(
             Icons.history,
-            color: Colors.white.withAlpha(100),
+            color: AppTheme.textLight,
             size: 20,
           ),
           title: Text(
             search,
-            style: const TextStyle(color: Colors.white70, fontSize: 14),
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
           ),
           trailing: GestureDetector(
             onTap: () {
@@ -232,7 +232,7 @@ class _SearchScreenState extends State<SearchScreen> {
             },
             child: Icon(
               Icons.close,
-              color: Colors.white.withAlpha(60),
+              color: AppTheme.textLight,
               size: 16,
             ),
           ),
@@ -282,8 +282,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   children: [
                     Text(
                       user['name'],
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -292,7 +292,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     Text(
                       '${user['username']}  •  ${user['followers']} seguidores',
                       style: TextStyle(
-                        color: Colors.white.withAlpha(120),
+                        color: AppTheme.textSecondary.withAlpha(120),
                         fontSize: 12,
                       ),
                     ),
@@ -307,10 +307,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   gradient: AppTheme.buttonGradient,
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: const Text(
+                child: Text(
                   'Seguir',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppTheme.textPrimary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -340,19 +340,19 @@ class _SearchScreenState extends State<SearchScreen> {
               decoration: BoxDecoration(
                 color: index < 3
                     ? AppTheme.primaryBlue.withAlpha(40)
-                    : Colors.white.withAlpha(15),
+                    : AppTheme.textPrimary.withAlpha(15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 index < 3 ? Icons.local_fire_department : Icons.tag,
-                color: index < 3 ? AppTheme.primaryBlue : Colors.white54,
+                color: index < 3 ? AppTheme.primaryBlue : AppTheme.textSecondary,
                 size: 20,
               ),
             ),
             title: Text(
               trend['tag'],
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: AppTheme.textPrimary,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
@@ -360,13 +360,13 @@ class _SearchScreenState extends State<SearchScreen> {
             subtitle: Text(
               trend['posts'],
               style: TextStyle(
-                color: Colors.white.withAlpha(90),
+                color: AppTheme.textSecondary.withAlpha(90),
                 fontSize: 12,
               ),
             ),
             trailing: Icon(
               Icons.arrow_forward_ios,
-              color: Colors.white.withAlpha(50),
+              color: AppTheme.textLight.withAlpha(50),
               size: 14,
             ),
             onTap: () {

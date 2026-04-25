@@ -96,9 +96,9 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
           return GestureDetector(
             onTap: () {},
             child: Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF1A1A2E),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceContainerLowest,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
               ),
               child: Column(
                 children: [
@@ -108,7 +108,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                   // Header
                   _buildHeader(),
 
-                  const Divider(color: Colors.white12, height: 1),
+                  Divider(color: AppTheme.outlineVariant.withAlpha(30), height: 1),
 
                   // Comments list
                   Expanded(
@@ -145,7 +145,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
         width: 40,
         height: 4,
         decoration: BoxDecoration(
-          color: Colors.white24,
+          color: AppTheme.textSecondary.withAlpha(60),
           borderRadius: BorderRadius.circular(2),
         ),
       ),
@@ -159,8 +159,8 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
         children: [
           Text(
             '${widget.commentCount} comentarios',
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: AppTheme.textPrimary,
               fontSize: 15,
               fontWeight: FontWeight.w700,
             ),
@@ -168,7 +168,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
           const Spacer(),
           GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.close, color: Colors.white54, size: 22),
+            child: Icon(Icons.close, color: AppTheme.textSecondary, size: 22),
           ),
         ],
       ),
@@ -176,20 +176,20 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
   }
 
   Widget _buildEmptyState() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.chat_bubble_outline, color: Colors.white24, size: 48),
+          Icon(Icons.chat_bubble_outline, color: AppTheme.textLight.withAlpha(60), size: 48),
           SizedBox(height: 12),
           Text(
             'Aún no hay comentarios',
-            style: TextStyle(color: Colors.white38, fontSize: 14),
+            style: TextStyle(color: AppTheme.textLight.withAlpha(80), fontSize: 14),
           ),
           SizedBox(height: 4),
           Text(
             'Sé el primero en comentar',
-            style: TextStyle(color: Colors.white24, fontSize: 12),
+            style: TextStyle(color: AppTheme.textLight.withAlpha(60), fontSize: 12),
           ),
         ],
       ),
@@ -233,8 +233,8 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                   children: [
                     Text(
                       comment.username,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -242,8 +242,8 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                     const SizedBox(width: 8),
                     Text(
                       comment.timeAgo,
-                      style: const TextStyle(
-                        color: Colors.white38,
+                      style: TextStyle(
+                        color: AppTheme.textLight.withAlpha(80),
                         fontSize: 11,
                       ),
                     ),
@@ -252,8 +252,8 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                 const SizedBox(height: 4),
                 Text(
                   comment.text,
-                  style: const TextStyle(
-                    color: Colors.white70,
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
                     fontSize: 13,
                     height: 1.3,
                   ),
@@ -263,26 +263,26 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                   children: [
                     GestureDetector(
                       onTap: () => _replyTo(comment.username),
-                      child: const Text(
+                      child: Text(
                         'Responder',
                         style: TextStyle(
-                          color: Colors.white38,
+                          color: AppTheme.textLight.withAlpha(80),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                     const SizedBox(width: 16),
-                    const Icon(
+                    Icon(
                       Icons.favorite_border,
-                      color: Colors.white38,
+                      color: AppTheme.textLight.withAlpha(80),
                       size: 14,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       comment.likes > 0 ? '${comment.likes}' : '',
-                      style: const TextStyle(
-                        color: Colors.white38,
+                      style: TextStyle(
+                        color: AppTheme.textLight.withAlpha(80),
                         fontSize: 11,
                       ),
                     ),
@@ -304,9 +304,9 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
         top: 10,
         bottom: bottomInset > 0 ? bottomInset + 8 : 16,
       ),
-      decoration: const BoxDecoration(
-        color: Color(0xFF12122A),
-        border: Border(top: BorderSide(color: Colors.white10)),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceContainer,
+        border: Border(top: BorderSide(color: AppTheme.outlineVariant.withAlpha(40))),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -319,14 +319,14 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                 children: [
                   Text(
                     'Respondiendo a $_replyingTo',
-                    style: const TextStyle(color: Colors.white38, fontSize: 12),
+                    style: TextStyle(color: AppTheme.textLight.withAlpha(80), fontSize: 12),
                   ),
                   const Spacer(),
                   GestureDetector(
                     onTap: () => setState(() => _replyingTo = null),
-                    child: const Icon(
+                    child: Icon(
                       Icons.close,
-                      color: Colors.white38,
+                      color: AppTheme.textLight.withAlpha(80),
                       size: 16,
                     ),
                   ),
@@ -363,14 +363,14 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                 child: Container(
                   height: 38,
                   decoration: BoxDecoration(
-                    color: Colors.white.withAlpha(20),
+                    color: AppTheme.textPrimary.withAlpha(20),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   alignment: Alignment.center,
                   child: TextField(
                     controller: _controller,
                     focusNode: _focusNode,
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                    style: TextStyle(color: AppTheme.textPrimary, fontSize: 13),
                     cursorColor: Colors.white54,
                     maxLines: 1,
                     textAlignVertical: TextAlignVertical.center,
@@ -379,7 +379,7 @@ class _CommentsBottomSheetState extends State<CommentsBottomSheet> {
                           ? 'Responder a $_replyingTo...'
                           : 'Añade un comentario...',
                       hintStyle: TextStyle(
-                        color: Colors.white.withAlpha(100),
+                        color: AppTheme.textSecondary.withAlpha(100),
                         fontSize: 13,
                       ),
                       filled: true,

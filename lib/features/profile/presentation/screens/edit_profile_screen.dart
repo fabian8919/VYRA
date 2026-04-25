@@ -99,13 +99,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -117,8 +117,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Text(
+                SizedBox(height: 20),
+                Text(
                   'Cambiar foto de perfil',
                   style: TextStyle(
                     fontSize: 18,
@@ -126,7 +126,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     color: AppTheme.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 _buildSourceOption(
                   icon: Icons.camera_alt,
                   label: 'Cámara',
@@ -135,7 +135,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     _pickImage(ImageSource.camera);
                   },
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _buildSourceOption(
                   icon: Icons.photo_library,
                   label: 'Galería',
@@ -146,7 +146,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 if (_currentAvatarUrl != null || _selectedImage != null)
                   Padding(
-                    padding: const EdgeInsets.only(top: 12),
+                    padding: EdgeInsets.only(top: 12),
                     child: _buildSourceOption(
                       icon: Icons.delete_outline,
                       label: 'Eliminar foto',
@@ -181,7 +181,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: AppTheme.surfaceContainer,
           borderRadius: BorderRadius.circular(12),
@@ -189,7 +189,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Row(
           children: [
             Icon(icon, color: iconColor ?? AppTheme.primaryBlue, size: 24),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Text(
               label,
               style: TextStyle(
@@ -218,13 +218,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       await _supabase.storage.from('avatars').uploadBinary(
         '$filePath/$fileName',
         bytes,
-        fileOptions: const FileOptions(contentType: 'image/jpeg'),
+        fileOptions: FileOptions(contentType: 'image/jpeg'),
       );
     } else {
       await _supabase.storage.from('avatars').upload(
         '$filePath/$fileName',
         File(_selectedImage!.path),
-        fileOptions: const FileOptions(contentType: 'image/jpeg'),
+        fileOptions: FileOptions(contentType: 'image/jpeg'),
       );
     }
 
@@ -256,7 +256,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Perfil actualizado correctamente'),
             backgroundColor: Colors.green,
           ),
@@ -297,7 +297,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoadingProfile) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppTheme.background,
         body: Center(
           child: CircularProgressIndicator(color: AppTheme.primaryBlue),
@@ -314,13 +314,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
                     children: [
                       IconButton(
                         onPressed: () => Navigator.pop(context),
                         icon: Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: AppTheme.surfaceContainerLowest,
                             borderRadius: BorderRadius.circular(12),
@@ -331,13 +331,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                             ],
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.arrow_back,
                             color: AppTheme.onSurfaceVariant,
                           ),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         child: Text(
                           'Editar perfil',
                           textAlign: TextAlign.center,
@@ -348,14 +348,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 48),
+                      SizedBox(width: 48),
                     ],
                   ),
                 ),
               ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                   child: Column(
                     children: [
                       // Avatar editable
@@ -381,20 +381,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               bottom: 0,
                               right: 0,
                               child: Container(
-                                padding: const EdgeInsets.all(8),
+                                padding: EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                   gradient: AppTheme.buttonGradient,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(color: Colors.white, width: 3),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF2563EB).withAlpha(100),
+                                      color: Color(0xFF2563EB).withAlpha(100),
                                       blurRadius: 8,
-                                      offset: const Offset(0, 2),
+                                      offset: Offset(0, 2),
                                     ),
                                   ],
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.camera_alt,
                                   color: Colors.white,
                                   size: 20,
@@ -404,7 +404,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32),
                       // Campo nickname (username)
                       _buildTextField(
                         controller: _nickNameController,
@@ -419,7 +419,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       // Campo nombre completo
                       _buildTextField(
                         controller: _fullNameController,
@@ -427,7 +427,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         hint: 'Tu nombre real',
                         icon: Icons.person_outline,
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       // Campo bio
                       _buildTextField(
                         controller: _bioController,
@@ -438,7 +438,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         maxLength: 150,
                         textInputAction: TextInputAction.done,
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32),
                       // Botón guardar
                       SizedBox(
                         width: double.infinity,
@@ -461,7 +461,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             child: Container(
                               alignment: Alignment.center,
                               child: _isSaving
-                                  ? const SizedBox(
+                                  ? SizedBox(
                                       width: 24,
                                       height: 24,
                                       child: CircularProgressIndicator(
@@ -469,7 +469,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         strokeWidth: 2.5,
                                       ),
                                     )
-                                  : const Text(
+                                  : Text(
                                       'Guardar cambios',
                                       style: TextStyle(
                                         fontSize: 16,
@@ -481,7 +481,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -531,7 +531,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       alignment: Alignment.center,
       child: Text(
         _getInitials(),
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
           fontSize: 48,
           fontWeight: FontWeight.bold,
@@ -557,13 +557,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: AppTheme.textPrimary,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         TextFormField(
           controller: controller,
           maxLines: maxLines,
@@ -586,7 +586,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   ),
             prefixIconConstraints: prefix != null
-                ? const BoxConstraints(minWidth: 0, minHeight: 0)
+                ? BoxConstraints(minWidth: 0, minHeight: 0)
                 : null,
           ),
         ),
@@ -602,7 +602,7 @@ class _AtPrefixFormatter extends TextInputFormatter {
     TextEditingValue newValue,
   ) {
     if (newValue.text.isEmpty) {
-      return const TextEditingValue(
+      return TextEditingValue(
         text: '@',
         selection: TextSelection.collapsed(offset: 1),
       );

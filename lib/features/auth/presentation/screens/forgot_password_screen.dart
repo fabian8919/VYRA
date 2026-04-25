@@ -49,15 +49,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.error_outline, color: Colors.white),
-            const SizedBox(width: 12),
+            Icon(Icons.error_outline, color: Colors.white),
+            SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
         backgroundColor: Colors.red.shade400,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
+        margin: EdgeInsets.all(16),
       ),
     );
   }
@@ -68,11 +68,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       backgroundColor: AppTheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // Botón volver
               GestureDetector(
@@ -85,7 +85,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppTheme.outlineVariant, width: 1),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_back_ios_new,
                     color: AppTheme.onSurfaceVariant,
                     size: 18,
@@ -93,10 +93,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
               ),
 
-              const SizedBox(height: 40),
+              SizedBox(height: 40),
 
               // Título
-              const Text(
+              Text(
                 'Recuperar\ncontraseña',
                 style: TextStyle(
                   fontSize: 36,
@@ -106,7 +106,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   height: 1.2,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 _emailSent
                     ? 'Revisa tu correo para continuar'
@@ -118,12 +118,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
               ),
 
-              const SizedBox(height: 40),
+              SizedBox(height: 40),
 
               // Card
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(28),
+                padding: EdgeInsets.all(28),
                 decoration: BoxDecoration(
                   color: AppTheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(24),
@@ -133,14 +133,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     : _buildFormContent(),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               if (_emailSent)
                 Center(
                   child: GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 32,
                         vertical: 14,
                       ),
@@ -149,7 +149,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         borderRadius: BorderRadius.circular(27),
                         boxShadow: AppTheme.buttonShadow,
                       ),
-                      child: const Text(
+                      child: Text(
                         'Volver al inicio',
                         style: TextStyle(
                           color: Colors.white,
@@ -180,18 +180,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               color: AppTheme.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.lock_reset_outlined,
               color: AppTheme.primaryBlue,
               size: 40,
             ),
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // Label
           _buildLabel('CORREO ELECTRÓNICO'),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           // Input
           _buildTextField(
@@ -210,7 +210,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             },
           ),
 
-          const SizedBox(height: 28),
+          SizedBox(height: 28),
 
           // Botón
           GestureDetector(
@@ -223,15 +223,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 borderRadius: BorderRadius.circular(27),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF2563EB).withAlpha(60),
+                    color: Color(0xFF2563EB).withAlpha(60),
                     blurRadius: 16,
-                    offset: const Offset(0, 6),
+                    offset: Offset(0, 6),
                   ),
                 ],
               ),
               child: Center(
                 child: _isLoading
-                    ? const SizedBox(
+                    ? SizedBox(
                         height: 24,
                         width: 24,
                         child: CircularProgressIndicator(
@@ -241,7 +241,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           strokeWidth: 2.5,
                         ),
                       )
-                    : const Row(
+                    : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
@@ -280,22 +280,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             borderRadius: BorderRadius.circular(28),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF2563EB).withAlpha(60),
+                color: Color(0xFF2563EB).withAlpha(60),
                 blurRadius: 16,
-                offset: const Offset(0, 6),
+                offset: Offset(0, 6),
               ),
             ],
           ),
-          child: const Icon(
+          child: Icon(
             Icons.mark_email_read_outlined,
             color: Colors.white,
             size: 48,
           ),
         ),
 
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
 
-        const Text(
+        Text(
           '¡Correo enviado!',
           style: TextStyle(
             fontSize: 24,
@@ -304,7 +304,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
         ),
 
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
 
         Text(
           'Revisa ${_emailController.text}',
@@ -316,7 +316,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
         ),
 
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
 
         TextButton.icon(
           onPressed: _isLoading ? null : _sendResetEmail,
@@ -329,10 +329,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     color: AppTheme.primaryBlue,
                   ),
                 )
-              : const Icon(Icons.refresh, size: 18),
+              : Icon(Icons.refresh, size: 18),
           label: Text(
             _isLoading ? 'Enviando...' : 'Reenviar',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.primaryBlue,
               fontWeight: FontWeight.w600,
             ),
@@ -345,7 +345,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         color: AppTheme.onSurfaceVariant,
         fontSize: 12,
         fontWeight: FontWeight.w700,
@@ -365,13 +365,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
-      style: const TextStyle(fontSize: 15, color: AppTheme.onSurface),
+      style: TextStyle(fontSize: 15, color: AppTheme.onSurface),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(color: AppTheme.outline.withAlpha(150), fontSize: 15),
         filled: true,
         fillColor: AppTheme.surfaceContainerLowest,
-        contentPadding: const EdgeInsets.symmetric(
+        contentPadding: EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
         ),
@@ -385,11 +385,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
+          borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFB41340), width: 1),
+          borderSide: BorderSide(color: Color(0xFFB41340), width: 1),
         ),
         prefixIcon: Icon(prefixIcon, color: AppTheme.outline, size: 20),
       ),

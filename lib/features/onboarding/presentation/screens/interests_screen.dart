@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/features/home/presentation/screens/home_screen.dart';
 import 'package:vyra/services/onboarding_service.dart';
 
@@ -6,10 +7,10 @@ class InterestItem {
   final String name;
   final String emoji;
 
-  const InterestItem({required this.name, required this.emoji});
+  InterestItem({required this.name, required this.emoji});
 }
 
-final List<InterestItem> _interests = const [
+final List<InterestItem> _interests = [
   InterestItem(name: 'Música', emoji: '🎵'),
   InterestItem(name: 'Deportes', emoji: '⚽'),
   InterestItem(name: 'Tecnología', emoji: '💻'),
@@ -62,7 +63,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
       await OnboardingService().markInterestsCompleted();
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => HomeScreen()),
           (route) => false,
         );
       }
@@ -76,28 +77,28 @@ class _InterestsScreenState extends State<InterestsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.background,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 40),
+              SizedBox(height: 40),
 
               // Título
-              const Text(
+              Text(
                 'Elige tus\nintereses',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1A1A2E),
+                  color: AppTheme.textPrimary,
                   letterSpacing: -0.5,
                   height: 1.2,
                 ),
               ),
 
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
 
               // Subtítulo
               Text(
@@ -105,17 +106,17 @@ class _InterestsScreenState extends State<InterestsScreen> {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
-                  color: const Color(0xFF8E8E93),
+                  color: AppTheme.textSecondary,
                   height: 1.4,
                 ),
               ),
 
-              const SizedBox(height: 28),
+              SizedBox(height: 28),
 
               // Chips de intereses
               Expanded(
                 child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
+                  physics: BouncingScrollPhysics(),
                   child: Wrap(
                     spacing: 10,
                     runSpacing: 12,
@@ -131,7 +132,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Botón Continuar
               GestureDetector(
@@ -141,13 +142,13 @@ class _InterestsScreenState extends State<InterestsScreen> {
                   height: 52,
                   decoration: BoxDecoration(
                     color: _canProceed
-                        ? const Color(0xFF1A1A2E)
-                        : const Color(0xFFE5E5EA),
+                        ? AppTheme.textPrimary
+                        : AppTheme.surfaceContainer,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
                     child: _isSaving
-                        ? const SizedBox(
+                        ? SizedBox(
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(
@@ -155,7 +156,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text(
+                        : Text(
                             'Continuar',
                             style: TextStyle(
                               color: Colors.white,
@@ -167,7 +168,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
             ],
           ),
         ),
@@ -192,23 +193,23 @@ class _InterestChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: Duration(milliseconds: 200),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFFF9E6) : Colors.white,
+          color: isSelected ? AppTheme.surfaceContainer : AppTheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFFFFD966)
-                : const Color(0xFFE5E5EA),
+                ? AppTheme.primaryBlue
+                : AppTheme.outlineVariant,
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withAlpha(8),
               blurRadius: 12,
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
             ),
           ],
         ),
@@ -217,15 +218,15 @@ class _InterestChip extends StatelessWidget {
           children: [
             Text(
               interest.emoji,
-              style: const TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               interest.name,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: isSelected ? const Color(0xFF1A1A2E) : const Color(0xFF3C3C43),
+                color: isSelected ? AppTheme.textPrimary : AppTheme.textSecondary,
               ),
             ),
           ],
