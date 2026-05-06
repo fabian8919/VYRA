@@ -12,7 +12,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Inicializar Supabase (para Storage y operaciones directas futuras)
-  // ⚠️ El AUTH ahora fluye por el backend, no por Supabase directamente.
   await Supabase.initialize(
     url: 'https://nybndivzkohedszwmezs.supabase.co',
     anonKey:
@@ -21,9 +20,6 @@ void main() async {
 
   // Cargar tema guardado
   await ThemeProvider.instance.loadTheme();
-
-  // Inicializar y validar sesión activa contra el backend
-  await AuthService().initializeSession();
 
   runApp(const VyraApp());
 }
@@ -51,17 +47,30 @@ class VyraApp extends StatelessWidget {
   }
 }
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
   @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  late final Future<void> _initFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Inicializar sesión DESPUÉS de que el StreamBuilder ya exista
+    _initFuture = AuthService().initializeSession();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return StreamBuilder<AppAuthState>(
-      stream: AuthService().authStateChanges,
-      initialData: AuthService().currentState,
-      builder: (context, snapshot) {
-        // Estado de carga
-        if (snapshot.data?.status == AuthStatus.loading) {
+    return FutureBuilder<void>(
+      future: _initFuture,
+      builder: (context, initSnapshot) {
+        // Mientras inicializa la sesión, mostramos loading
+        if (initSnapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
               child: CircularProgressIndicator(color: AppTheme.primaryBlue),
@@ -69,13 +78,26 @@ class AuthWrapper extends StatelessWidget {
           );
         }
 
-        // Usuario autenticado
-        if (snapshot.data?.status == AuthStatus.authenticated) {
-          return const _PostLoginGate();
-        }
+        // Una vez inicializado, escuchamos el stream de auth
+        return StreamBuilder<AppAuthState>(
+          stream: AuthService().authStateChanges,
+          initialData: AuthService().currentState,
+          builder: (context, snapshot) {
+            if (snapshot.data?.status == AuthStatus.loading) {
+              return const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+                ),
+              );
+            }
 
-        // Usuario no autenticado
-        return const LoginScreen();
+            if (snapshot.data?.status == AuthStatus.authenticated) {
+              return const _PostLoginGate();
+            }
+
+            return const LoginScreen();
+          },
+        );
       },
     );
   }
