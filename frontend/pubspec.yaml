@@ -51,6 +51,9 @@ dependencies:
   # Local storage
   shared_preferences: ^2.5.3
 
+  # HTTP client for backend API
+  http: ^1.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
