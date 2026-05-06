@@ -16,7 +16,6 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _authService = AuthService();
-  final _supabase = Supabase.instance.client;
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
 
@@ -213,22 +212,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final fileName = '${user.id}_${DateTime.now().millisecondsSinceEpoch}.jpg';
     const filePath = 'public';
 
+    final supabase = Supabase.instance.client;
+
     if (kIsWeb) {
       final bytes = _webImageBytes ?? await _selectedImage!.readAsBytes();
-      await _supabase.storage.from('avatars').uploadBinary(
+      await supabase.storage.from('avatars').uploadBinary(
         '$filePath/$fileName',
         bytes,
         fileOptions: FileOptions(contentType: 'image/jpeg'),
       );
     } else {
-      await _supabase.storage.from('avatars').upload(
+      await supabase.storage.from('avatars').upload(
         '$filePath/$fileName',
         File(_selectedImage!.path),
         fileOptions: FileOptions(contentType: 'image/jpeg'),
       );
     }
 
-    final url = _supabase.storage.from('avatars').getPublicUrl('$filePath/$fileName');
+    final url = supabase.storage.from('avatars').getPublicUrl('$filePath/$fileName');
     // Eliminar parámetros de query para URL limpia
     return Uri.parse(url).replace(queryParameters: {}).toString();
   }

@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:vyra/services/auth_service.dart';
 
 class OnboardingService {
   static final OnboardingService _instance = OnboardingService._internal();
@@ -12,7 +12,7 @@ class OnboardingService {
 
   /// Verifica si el usuario ya completó la selección de intereses.
   Future<bool> hasCompletedInterests() async {
-    final user = Supabase.instance.client.auth.currentUser;
+    final user = AuthService().currentUser;
     if (user == null) return false;
 
     final prefs = await SharedPreferences.getInstance();
@@ -21,7 +21,7 @@ class OnboardingService {
 
   /// Marca que el usuario completó la selección de intereses.
   Future<void> markInterestsCompleted() async {
-    final user = Supabase.instance.client.auth.currentUser;
+    final user = AuthService().currentUser;
     if (user == null) return;
 
     final prefs = await SharedPreferences.getInstance();
@@ -30,7 +30,7 @@ class OnboardingService {
 
   /// Limpia el estado (útil al cerrar sesión).
   Future<void> clearOnboardingState() async {
-    final user = Supabase.instance.client.auth.currentUser;
+    final user = AuthService().currentUser;
     if (user == null) return;
 
     final prefs = await SharedPreferences.getInstance();
