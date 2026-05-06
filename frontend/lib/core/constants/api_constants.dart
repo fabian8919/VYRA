@@ -1,6 +1,9 @@
 class ApiConstants {
-  // TODO: Cambiar a la URL de producción cuando deployes
-  static const String baseUrl = 'http://10.0.2.2:3000'; // Android emulator localhost
+  // Producción (Vercel)
+  static const String baseUrl = 'https://project-ax22f.vercel.app';
+
+  // Desarrollo local
+  // static const String baseUrl = 'http://10.0.2.2:3000'; // Android emulator
   // static const String baseUrl = 'http://localhost:3000'; // iOS simulator / web
 
   static const String apiVersion = '/api';

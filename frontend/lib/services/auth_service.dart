@@ -34,11 +34,11 @@ class AuthUser {
 /// Eventos de estado de autenticación
 enum AuthStatus { authenticated, unauthenticated, loading }
 
-class AuthState {
+class AppAuthState {
   final AuthStatus status;
   final AuthUser? user;
 
-  AuthState({required this.status, this.user});
+  AppAuthState({required this.status, this.user});
 }
 
 class AuthService {
@@ -46,8 +46,11 @@ class AuthService {
   factory AuthService() => _instance;
   AuthService._internal();
 
-  final _authStateController = StreamController<AuthState>.broadcast();
-  Stream<AuthState> get authStateChanges => _authStateController.stream;
+  final _authStateController = StreamController<AppAuthState>.broadcast();
+  Stream<AppAuthState> get authStateChanges => _authStateController.stream;
+
+  AppAuthState _currentState = AppAuthState(status: AuthStatus.loading);
+  AppAuthState get currentState => _currentState;
 
   AuthUser? _currentUser;
   AuthUser? get currentUser => _currentUser;
@@ -107,12 +110,14 @@ class AuthService {
 
   /// Valida si hay un token guardado y es válido llamando a /api/auth/me
   Future<void> initializeSession() async {
-    _authStateController.add(AuthState(status: AuthStatus.loading));
+    _currentState = AppAuthState(status: AuthStatus.loading);
+    _authStateController.add(_currentState);
 
     final token = await getAccessToken();
     if (token == null || token.isEmpty) {
       _currentUser = null;
-      _authStateController.add(AuthState(status: AuthStatus.unauthenticated));
+      _currentState = AppAuthState(status: AuthStatus.unauthenticated);
+      _authStateController.add(_currentState);
       return;
     }
 
@@ -120,28 +125,30 @@ class AuthService {
       final response = await http.get(
         Uri.parse(ApiConstants.me),
         headers: await _headers(auth: true),
-      );
+      ).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body) as Map<String, dynamic>;
         final userJson = body['user'] as Map<String, dynamic>;
         _currentUser = AuthUser.fromJson(userJson);
-        _authStateController.add(
-          AuthState(status: AuthStatus.authenticated, user: _currentUser),
-        );
+        _currentState = AppAuthState(status: AuthStatus.authenticated, user: _currentUser);
+        _authStateController.add(_currentState);
       } else {
         await _clearTokens();
         _currentUser = null;
-        _authStateController.add(AuthState(status: AuthStatus.unauthenticated));
+        _currentState = AppAuthState(status: AuthStatus.unauthenticated);
+      _authStateController.add(_currentState);
       }
     } on SocketException {
       // Sin conexión: mantener estado anterior o marcar como no autenticado
       _currentUser = null;
-      _authStateController.add(AuthState(status: AuthStatus.unauthenticated));
+      _currentState = AppAuthState(status: AuthStatus.unauthenticated);
+      _authStateController.add(_currentState);
     } catch (e) {
       await _clearTokens();
       _currentUser = null;
-      _authStateController.add(AuthState(status: AuthStatus.unauthenticated));
+      _currentState = AppAuthState(status: AuthStatus.unauthenticated);
+      _authStateController.add(_currentState);
     }
   }
 
@@ -161,7 +168,7 @@ class AuthService {
           'email': email,
           'password': password,
         }),
-      );
+      ).timeout(const Duration(seconds: 8));
 
       final body = jsonDecode(response.body) as Map<String, dynamic>;
 
@@ -177,7 +184,7 @@ class AuthService {
       _currentUser = AuthUser.fromJson(userJson);
 
       _authStateController.add(
-        AuthState(status: AuthStatus.authenticated, user: _currentUser),
+        AppAuthState(status: AuthStatus.authenticated, user: _currentUser),
       );
     } on SocketException {
       throw Exception('Sin conexión a internet. Verifica tu red.');
@@ -204,7 +211,7 @@ class AuthService {
           'password': password,
           'name': name,
         }),
-      );
+      ).timeout(const Duration(seconds: 8));
 
       final body = jsonDecode(response.body) as Map<String, dynamic>;
 
@@ -221,12 +228,12 @@ class AuthService {
         await _saveTokens(accessToken: accessToken, refreshToken: refreshToken);
         _currentUser = AuthUser.fromJson(userJson);
 
-        _authStateController.add(
-          AuthState(status: AuthStatus.authenticated, user: _currentUser),
-        );
+        _currentState = AppAuthState(status: AuthStatus.authenticated, user: _currentUser);
+        _authStateController.add(_currentState);
       } else {
         // Requiere confirmación de email
-        _authStateController.add(AuthState(status: AuthStatus.unauthenticated));
+        _currentState = AppAuthState(status: AuthStatus.unauthenticated);
+      _authStateController.add(_currentState);
       }
     } on SocketException {
       throw Exception('Sin conexión a internet. Verifica tu red.');
@@ -248,14 +255,15 @@ class AuthService {
         await http.post(
           Uri.parse(ApiConstants.logout),
           headers: await _headers(auth: true),
-        );
+        ).timeout(const Duration(seconds: 8));
       }
     } catch (e) {
       // Ignorar errores de red en logout
     } finally {
       await _clearTokens();
       _currentUser = null;
-      _authStateController.add(AuthState(status: AuthStatus.unauthenticated));
+      _currentState = AppAuthState(status: AuthStatus.unauthenticated);
+      _authStateController.add(_currentState);
     }
   }
 

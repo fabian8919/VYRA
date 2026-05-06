@@ -195,7 +195,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
 
     final user = _authService.currentUser;
     final nickName = _getProfileValue('username', _userData['name']);
-    final fullName = user?.userMetadata?['full_name'] as String?;
+    final fullName = user?.metadata?['full_name'] as String?;
     final userBio = _getProfileValue('bio', _userData['bio']);
     final avatarUrl = _profileData?['avatar_url'] as String?;
 

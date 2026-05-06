@@ -56,12 +56,12 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<AuthState>(
+    return StreamBuilder<AppAuthState>(
       stream: AuthService().authStateChanges,
+      initialData: AuthService().currentState,
       builder: (context, snapshot) {
-        // Estado inicial mientras carga
-        if (snapshot.connectionState == ConnectionState.waiting ||
-            snapshot.data?.status == AuthStatus.loading) {
+        // Estado de carga
+        if (snapshot.data?.status == AuthStatus.loading) {
           return const Scaffold(
             body: Center(
               child: CircularProgressIndicator(color: AppTheme.primaryBlue),

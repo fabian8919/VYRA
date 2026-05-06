@@ -45,7 +45,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           setState(() {
             final rawNick = profile?['username'] as String? ?? '';
             _nickNameController.text = rawNick.startsWith('@') ? rawNick : '@$rawNick';
-            _fullNameController.text = user.userMetadata?['full_name'] as String? ?? '';
+            _fullNameController.text = user.metadata?['full_name'] as String? ?? '';
             _bioController.text = profile?['bio'] as String? ?? '';
             _currentAvatarUrl = profile?['avatar_url'] as String?;
             _isLoadingProfile = false;
