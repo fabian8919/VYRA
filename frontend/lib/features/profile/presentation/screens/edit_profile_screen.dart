@@ -27,6 +27,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Uint8List? _webImageBytes;
   bool _isSaving = false;
   bool _isLoadingProfile = true;
+  bool _avatarDeleted = false;
 
   String? _currentAvatarUrl;
 
@@ -41,18 +42,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (user != null) {
       try {
         final profile = await _authService.getProfile(user.id);
+        debugPrint('[EditProfile] profile loaded: $profile');
         if (mounted) {
           setState(() {
             final rawNick = profile?['username'] as String? ?? '';
-            _nickNameController.text = rawNick.startsWith('@') ? rawNick : '@$rawNick';
-            _fullNameController.text = user.metadata?['full_name'] as String? ?? '';
+            _nickNameController.text = rawNick.isEmpty
+                ? '@'
+                : (rawNick.startsWith('@') ? rawNick : '@$rawNick');
+            _fullNameController.text = profile?['full_name'] as String? ?? '';
             _bioController.text = profile?['bio'] as String? ?? '';
             _currentAvatarUrl = profile?['avatar_url'] as String?;
             _isLoadingProfile = false;
           });
         }
       } catch (e) {
-        if (mounted) setState(() => _isLoadingProfile = false);
+        debugPrint('[EditProfile] error loading profile: $e');
+        if (mounted) {
+          setState(() {
+            _nickNameController.text = '@';
+            _fullNameController.text = '';
+            _bioController.text = '';
+            _isLoadingProfile = false;
+          });
+        }
       }
     } else {
       setState(() => _isLoadingProfile = false);
@@ -151,12 +163,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       label: 'Eliminar foto',
                       iconColor: Colors.red,
                       textColor: Colors.red,
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
+                        // Borrar del Storage inmediatamente para no dejar archivos huérfanos
+                        if (_currentAvatarUrl != null && _currentAvatarUrl!.isNotEmpty) {
+                          await _deleteAvatarFromStorage(_currentAvatarUrl);
+                        }
                         setState(() {
                           _selectedImage = null;
                           _webImageBytes = null;
                           _currentAvatarUrl = null;
+                          _avatarDeleted = true;
                         });
                       },
                     ),
@@ -203,33 +220,77 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  /// Extrae el path relativo dentro del bucket desde una URL pública de Supabase Storage.
+  /// Ej: https://.../storage/v1/object/public/images/{userId}/{fileName}
+  /// Devuelve: {userId}/{fileName}
+  String? _extractStoragePath(String url) {
+    try {
+      final uri = Uri.parse(url);
+      final pathSegments = uri.pathSegments;
+      // Busca el índice de 'images' y toma todo lo que viene después
+      final imagesIndex = pathSegments.indexOf('images');
+      if (imagesIndex == -1 || imagesIndex + 1 >= pathSegments.length) {
+        return null;
+      }
+      return pathSegments.sublist(imagesIndex + 1).join('/');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Borra un archivo del bucket 'images' dado su URL pública.
+  Future<void> _deleteAvatarFromStorage(String? avatarUrl) async {
+    if (avatarUrl == null || avatarUrl.isEmpty) return;
+    final path = _extractStoragePath(avatarUrl);
+    if (path == null) return;
+    try {
+      await Supabase.instance.client.storage.from('images').remove([path]);
+    } catch (e) {
+      debugPrint('Error eliminando avatar anterior: $e');
+    }
+  }
+
   Future<String?> _uploadAvatar() async {
     if (_selectedImage == null) return _currentAvatarUrl;
 
     final user = _authService.currentUser;
     if (user == null) return null;
 
-    final fileName = '${user.id}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    const filePath = 'public';
+    final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final filePath = user.id; // carpeta por usuario: images/{userId}/{fileName}
 
     final supabase = Supabase.instance.client;
+    debugPrint('[Upload] user: ${user.id}, path: $filePath/$fileName');
+    debugPrint('[Upload] session: ${supabase.auth.currentSession != null}');
 
-    if (kIsWeb) {
-      final bytes = _webImageBytes ?? await _selectedImage!.readAsBytes();
-      await supabase.storage.from('avatars').uploadBinary(
-        '$filePath/$fileName',
-        bytes,
-        fileOptions: FileOptions(contentType: 'image/jpeg'),
-      );
-    } else {
-      await supabase.storage.from('avatars').upload(
-        '$filePath/$fileName',
-        File(_selectedImage!.path),
-        fileOptions: FileOptions(contentType: 'image/jpeg'),
-      );
+    // 1. Borrar foto anterior si existe
+    await _deleteAvatarFromStorage(_currentAvatarUrl);
+
+    // 2. Subir nueva foto
+    try {
+      if (kIsWeb) {
+        final bytes = _webImageBytes ?? await _selectedImage!.readAsBytes();
+        await supabase.storage.from('images').uploadBinary(
+          '$filePath/$fileName',
+          bytes,
+          fileOptions: FileOptions(contentType: 'image/jpeg'),
+        );
+      } else {
+        await supabase.storage.from('images').upload(
+          '$filePath/$fileName',
+          File(_selectedImage!.path),
+          fileOptions: FileOptions(contentType: 'image/jpeg'),
+        );
+      }
+    } on StorageException catch (e) {
+      debugPrint('[Upload] StorageException: ${e.message}');
+      rethrow;
+    } catch (e) {
+      debugPrint('[Upload] Error: $e');
+      rethrow;
     }
 
-    final url = supabase.storage.from('avatars').getPublicUrl('$filePath/$fileName');
+    final url = supabase.storage.from('images').getPublicUrl('$filePath/$fileName');
     // Eliminar parámetros de query para URL limpia
     return Uri.parse(url).replace(queryParameters: {}).toString();
   }
@@ -241,19 +302,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     try {
       String? avatarUrl;
-      if (_selectedImage != null || _currentAvatarUrl == null) {
+
+      if (_selectedImage != null) {
+        // Caso 1: nueva imagen seleccionada
         avatarUrl = await _uploadAvatar();
+      } else if (_avatarDeleted) {
+        // Caso 2: usuario eliminó su foto
+        avatarUrl = null;
       } else {
+        // Caso 3: sin cambios
         avatarUrl = _currentAvatarUrl;
       }
 
       await _authService.updateProfile(
-        name: _nickNameController.text.trim(),
+        username: _nickNameController.text.trim(),
         bio: _bioController.text.trim(),
         avatarUrl: avatarUrl,
+        fullName: _fullNameController.text.trim(),
       );
-
-      await _authService.updateDisplayName(_fullNameController.text.trim());
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -269,7 +335,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Error al subir la imagen. Verifica que el bucket "avatars" exista en Supabase.',
+              'Error al subir la imagen. Verifica que el bucket "images" exista en Supabase.',
             ),
             backgroundColor: Colors.red,
           ),

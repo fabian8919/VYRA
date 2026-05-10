@@ -269,8 +269,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     final user = _authService.currentUser;
-    final nickName = _getProfileValue('username', _userData['name']);
-    final fullName = user?.metadata?['full_name'] as String?;
+    final rawNick = _getProfileValue('username', _userData['name']);
+    final nickName = rawNick.isNotEmpty && !rawNick.startsWith('@') ? '@$rawNick' : rawNick;
+    final fullName = _profileData?['full_name'] as String?;
     final userBio = _getProfileValue('bio', _userData['bio']);
     final avatarUrl = _profileData?['avatar_url'] as String?;
 

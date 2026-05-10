@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vyra/core/constants/api_constants.dart';
 import 'package:vyra/services/onboarding_service.dart';
 
@@ -69,6 +71,11 @@ class AuthService {
     return prefs.getString(_keyAccessToken);
   }
 
+  Future<String?> _getRefreshToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyRefreshToken);
+  }
+
   Future<void> _saveTokens({
     required String accessToken,
     required String refreshToken,
@@ -130,6 +137,17 @@ class AuthService {
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body) as Map<String, dynamic>;
         final userJson = body['user'] as Map<String, dynamic>;
+
+        // Restaurar sesión de Supabase Flutter para que Storage funcione
+        final refreshToken = await _getRefreshToken();
+        if (refreshToken != null) {
+          try {
+            await Supabase.instance.client.auth.setSession(refreshToken);
+          } catch (e) {
+            debugPrint('Error restaurando sesión de Supabase: $e');
+          }
+        }
+
         _currentUser = AuthUser.fromJson(userJson);
         _currentState = AppAuthState(status: AuthStatus.authenticated, user: _currentUser);
         _authStateController.add(_currentState);
@@ -181,6 +199,14 @@ class AuthService {
       final userJson = body['user'] as Map<String, dynamic>;
 
       await _saveTokens(accessToken: accessToken, refreshToken: refreshToken);
+
+      // Autenticar también el cliente de Supabase Flutter para que Storage funcione
+      try {
+        await Supabase.instance.client.auth.setSession(refreshToken);
+      } catch (e) {
+        debugPrint('Error seteando sesión de Supabase: $e');
+      }
+
       _currentUser = AuthUser.fromJson(userJson);
 
       _authStateController.add(
@@ -226,6 +252,14 @@ class AuthService {
         final userJson = body['user'] as Map<String, dynamic>;
 
         await _saveTokens(accessToken: accessToken, refreshToken: refreshToken);
+
+        // Autenticar también el cliente de Supabase Flutter para que Storage funcione
+        try {
+          await Supabase.instance.client.auth.setSession(refreshToken);
+        } catch (e) {
+          debugPrint('Error seteando sesión de Supabase: $e');
+        }
+
         _currentUser = AuthUser.fromJson(userJson);
 
         _currentState = AppAuthState(status: AuthStatus.authenticated, user: _currentUser);
@@ -272,41 +306,83 @@ class AuthService {
   // ──────────────────────────────────────────
 
   Future<Map<String, dynamic>?> getProfile(String userId) async {
-    // Por ahora, devuelve los metadatos del usuario.
-    // Cuando tengas /api/users/:id o /api/profiles/:id,
-    // reemplaza esta implementación.
-    if (_currentUser == null) return null;
-    return {
-      'id': _currentUser!.id,
-      'username': _currentUser!.name,
-      'full_name': _currentUser!.name,
-    };
+    final token = await getAccessToken();
+    if (token == null) {
+      debugPrint('[getProfile] token is null');
+      return null;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse(ApiConstants.usersMe),
+        headers: await _headers(auth: true),
+      ).timeout(const Duration(seconds: 15));
+
+      debugPrint('[getProfile] status: ${response.statusCode}');
+      debugPrint('[getProfile] body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        return body;
+      }
+      throw Exception('Error ${response.statusCode}: ${response.body}');
+    } on SocketException catch (e) {
+      debugPrint('[getProfile] SocketException: $e');
+      rethrow;
+    } catch (e) {
+      debugPrint('[getProfile] error: $e');
+      rethrow;
+    }
   }
 
   // ──────────────────────────────────────────
-  // Actualizar perfil (placeholder para futuro)
+  // Actualizar perfil vía backend
   // ──────────────────────────────────────────
 
-  Future<void> updateProfile({
-    String? name,
+  Future<Map<String, dynamic>> updateProfile({
+    String? username,
     String? bio,
     String? avatarUrl,
+    String? fullName,
   }) async {
-    // TODO: Implementar vía backend cuando exista el endpoint
     if (_currentUser == null) {
       throw Exception('No hay sesión activa');
     }
-    // Por ahora solo actualiza localmente
+
+    final body = <String, dynamic>{};
+    if (username != null) body['username'] = username;
+    if (bio != null) body['bio'] = bio;
+    if (avatarUrl != null) body['avatar_url'] = avatarUrl;
+    if (fullName != null) body['full_name'] = fullName;
+
+    final response = await http.patch(
+      Uri.parse(ApiConstants.usersMe),
+      headers: await _headers(auth: true),
+      body: jsonEncode(body),
+    ).timeout(const Duration(seconds: 15));
+
+    final responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode != 200) {
+      throw Exception(responseBody['error'] ?? 'Error al actualizar perfil');
+    }
+
+    // Actualizar usuario local con los nuevos datos
     _currentUser = AuthUser(
       id: _currentUser!.id,
       email: _currentUser!.email,
-      name: name ?? _currentUser!.name,
-      metadata: _currentUser!.metadata,
+      name: fullName ?? _currentUser!.name,
+      metadata: {
+        ...?_currentUser!.metadata,
+        'full_name': fullName,
+      },
     );
+
+    return responseBody;
   }
 
   Future<void> updateDisplayName(String name) async {
-    await updateProfile(name: name);
+    await updateProfile(fullName: name);
   }
 
   // ──────────────────────────────────────────
