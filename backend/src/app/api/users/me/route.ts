@@ -56,6 +56,17 @@ export async function GET(request: Request) {
     );
   }
 
+  // Contar posts del usuario
+  const { count: postsCount, error: countError } = await adminClient
+    .from("post")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  if (countError) {
+    // eslint-disable-next-line no-console
+    console.log("[GET /api/users/me] count error:", countError.message);
+  }
+
   const response = {
     id: user.id,
     email: user.email,
@@ -64,6 +75,7 @@ export async function GET(request: Request) {
     bio: profile?.bio ?? null,
     avatar_url: profile?.avatar_url ?? null,
     created_at: profile?.created_at ?? user.created_at,
+    posts_count: postsCount ?? 0,
   };
 
   // eslint-disable-next-line no-console

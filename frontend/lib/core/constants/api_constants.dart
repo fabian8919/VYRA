@@ -16,4 +16,8 @@ class ApiConstants {
 
   // Users endpoints
   static String get usersMe => '$baseUrl$apiVersion/users/me';
+
+  // Posts endpoints
+  static String get posts => '$baseUrl$apiVersion/posts';
+  static String get myPosts => '$baseUrl$apiVersion/users/me/posts';
 }

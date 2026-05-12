@@ -3,6 +3,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/services/auth_service.dart';
 import 'package:vyra/features/posts/presentation/screens/create_post_screen.dart';
+import 'package:vyra/features/posts/presentation/screens/post_detail_screen.dart';
+import 'package:vyra/services/post_service.dart';
 import 'package:vyra/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:vyra/features/profile/presentation/screens/settings_screen.dart';
 
@@ -124,80 +126,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<Map<String, dynamic>> _followers = [];
   List<Map<String, dynamic>> _following = [];
 
-  final List<Map<String, dynamic>> _userPosts = [
-    {
-      'image':
-          'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
-      'likes': 1234,
-      'views': 5678,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-      'likes': 892,
-      'views': 3456,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=400',
-      'likes': 2156,
-      'views': 8901,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
-      'likes': 3421,
-      'views': 12345,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400',
-      'likes': 567,
-      'views': 2345,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=400',
-      'likes': 1890,
-      'views': 6789,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=400',
-      'likes': 2341,
-      'views': 8765,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400',
-      'likes': 445,
-      'views': 1890,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400',
-      'likes': 1567,
-      'views': 5432,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400',
-      'likes': 2100,
-      'views': 8900,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400',
-      'likes': 1800,
-      'views': 7200,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400',
-      'likes': 3200,
-      'views': 15000,
-    },
-  ];
+  // Posts reales del usuario
+  List<Map<String, dynamic>> _userPosts = [];
+  bool _isLoadingPosts = true;
 
   @override
   void initState() {
@@ -226,6 +157,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } else {
       setState(() => _isLoadingProfile = false);
+    }
+    await _loadMyPosts();
+  }
+
+  Future<void> _loadMyPosts() async {
+    try {
+      final posts = await PostService().getMyPosts();
+      if (mounted) {
+        setState(() {
+          _userPosts = posts;
+          _isLoadingPosts = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('[ProfileScreen] error cargando posts: $e');
+      if (mounted) {
+        setState(() => _isLoadingPosts = false);
+      }
     }
   }
 
@@ -509,7 +458,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: _buildStat(
                             'Posts',
-                            _userData['postsCount'].toString(),
+                            _getProfileValue('posts_count', '0'),
                             Icons.grid_on,
                           ),
                         ),
@@ -635,20 +584,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SliverToBoxAdapter(child: SizedBox(height: 20)),
 
             // Grid de imágenes
-            SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 0.85,
+            if (_isLoadingPosts)
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(40),
+                  child: Center(
+                    child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+                  ),
                 ),
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  return _buildImageCard(_userPosts[index]);
-                }, childCount: _userPosts.length),
+              )
+            else if (_userPosts.isEmpty)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(40),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.camera_alt_outlined,
+                        size: 64,
+                        color: Colors.grey.shade300,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Aún no tienes publicaciones',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade500,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Toca el + para crear tu primera foto',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 0.85,
+                  ),
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    return _buildImageCard(_userPosts[index], index);
+                  }, childCount: _userPosts.length),
+                ),
               ),
-            ),
 
             SliverToBoxAdapter(child: SizedBox(height: 40)),
           ],
@@ -960,7 +951,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             initialImages: [photo],
                           ),
                         ),
-                      );
+                      ).then((result) {
+                        if (result == true) {
+                          _loadProfile();
+                        }
+                      });
                     }
                   },
                 ),
@@ -990,7 +985,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             initialImages: photos,
                           ),
                         ),
-                      );
+                      ).then((result) {
+                        if (result == true) {
+                          _loadProfile();
+                        }
+                      });
                     }
                   },
                 ),
@@ -1026,9 +1025,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildImageCard(Map<String, dynamic> post) {
+  Widget _buildImageCard(Map<String, dynamic> post, int index) {
+    final imageUrls = post['image_urls'];
+    final firstImage = (imageUrls is List && imageUrls.isNotEmpty)
+        ? imageUrls[0] as String
+        : null;
+    final rawNick = _getProfileValue('username', _userData['name']);
+    final nickName = rawNick.isNotEmpty && !rawNick.startsWith('@') ? '@$rawNick' : rawNick;
+    final fullName = _profileData?['full_name'] as String?;
+    final avatarUrl = _profileData?['avatar_url'] as String?;
+
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PostDetailScreen(
+              post: post,
+              username: nickName,
+              avatarUrl: avatarUrl,
+              fullName: fullName,
+            ),
+          ),
+        );
+      },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -1036,7 +1056,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             BoxShadow(
               color: AppTheme.outlineVariant.withAlpha(100),
               blurRadius: 10,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -1045,70 +1065,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.network(
-                post['image'],
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    color: Colors.grey.shade100,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: AppTheme.primaryBlue,
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [Colors.black.withAlpha(179), Colors.transparent],
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.favorite, color: Colors.white, size: 14),
-                      SizedBox(width: 4),
-                      Text(
-                        _formatNumber(post['likes'] ?? 0),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
+              if (firstImage != null)
+                Image.network(
+                  firstImage,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      color: Colors.grey.shade100,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: AppTheme.primaryBlue,
+                          strokeWidth: 2,
                         ),
                       ),
-                      SizedBox(width: 12),
-                      Icon(
-                        Icons.visibility,
-                        color: Colors.white,
-                        size: 14,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        _formatNumber(post['views'] ?? 0),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                    );
+                  },
+                  errorBuilder: (_, __, ___) => Container(
+                    color: Colors.grey.shade200,
+                    child: const Center(
+                      child: Icon(Icons.broken_image, color: Colors.grey),
+                    ),
+                  ),
+                )
+              else
+                Container(
+                  color: Colors.grey.shade100,
+                  child: const Center(
+                    child: Icon(Icons.image_not_supported, color: Colors.grey),
                   ),
                 ),
-              ),
+              // Indicador de múltiples imágenes
+              if (imageUrls is List && imageUrls.length > 1)
+                const Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Icon(
+                    Icons.collections,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
             ],
           ),
         ),

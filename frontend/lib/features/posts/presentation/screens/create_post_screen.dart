@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:vyra/core/theme/app_theme.dart';
+import 'package:vyra/services/auth_service.dart';
+import 'package:vyra/services/post_service.dart';
 
 class CreatePostScreen extends StatefulWidget {
   final List<XFile>? initialImages;
@@ -20,7 +22,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _descriptionController = TextEditingController();
   final PageController _pageController = PageController();
-  
+  final _authService = AuthService();
+  final _postService = PostService();
+
   List<XFile> _selectedImages = [];
   List<Uint8List> _imageBytes = [];
   int _currentImageIndex = 0;
@@ -102,13 +106,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -120,7 +124,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Text(
                   'Agregar foto',
                   style: TextStyle(
@@ -129,7 +133,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     color: AppTheme.onSurface,
                   ),
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 _ImageSourceOption(
                   icon: Icons.camera_alt,
                   label: 'Cámara',
@@ -139,7 +143,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     _pickImage(ImageSource.camera);
                   },
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 _ImageSourceOption(
                   icon: Icons.photo_library,
                   label: 'Galería',
@@ -149,7 +153,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     _pickImage(ImageSource.gallery);
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -163,20 +167,55 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
     setState(() => _isLoading = true);
 
-    // Simular publicación
-    await Future.delayed(Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() => _isLoading = false);
-      Navigator.pop(context);
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Publicación creada exitosamente'),
-          backgroundColor: Colors.green,
-        ),
+    try {
+      // 1. Subir imágenes a Storage
+      final imageUrls = await _postService.uploadImages(
+        _selectedImages,
+        webBytes: kIsWeb ? _imageBytes : null,
       );
+
+      // 2. Crear el post en el backend
+      await _postService.createPost(
+        description: _descriptionController.text.trim(),
+        imageUrls: imageUrls,
+      );
+
+      if (mounted) {
+        setState(() => _isLoading = false);
+        Navigator.pop(context, true);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Publicación creada exitosamente'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } on Exception catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
+  }
+
+  String _getUserDisplayName() {
+    final user = _authService.currentUser;
+    if (user == null) return 'Usuario';
+    final name = user.name;
+    if (name != null && name.isNotEmpty) return name;
+    return user.email.split('@').first;
+  }
+
+  String _getUserInitials() {
+    final name = _getUserDisplayName();
+    if (name.isNotEmpty) return name[0].toUpperCase();
+    return 'U';
   }
 
   @override
@@ -255,7 +294,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 }
                                 return Container(
                                   color: Colors.grey.shade200,
-                                  child: Center(
+                                  child: const Center(
                                     child: CircularProgressIndicator(),
                                   ),
                                 );
@@ -274,7 +313,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                               top: 16,
                               right: 16,
                               child: Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
                                   vertical: 6,
                                 ),
@@ -284,7 +323,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 ),
                                 child: Text(
                                   '${_currentImageIndex + 1}/${_selectedImages.length}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -298,12 +337,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                             child: GestureDetector(
                               onTap: () => _removeImage(_currentImageIndex),
                               child: Container(
-                                padding: EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                   color: Colors.black.withAlpha(153),
                                   shape: BoxShape.circle,
                                 ),
-                                child: Icon(
+                                child: const Icon(
                                   Icons.delete_outline,
                                   color: Colors.white,
                                   size: 20,
@@ -328,7 +367,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                               size: 80,
                               color: Colors.grey.shade400,
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Text(
                               'Selecciona una o más fotos',
                               style: TextStyle(
@@ -344,11 +383,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   // Botón agregar más fotos
                   if (_selectedImages.isNotEmpty)
                     Padding(
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       child: GestureDetector(
                         onTap: _showImageSourceDialog,
                         child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
                             border: Border.all(color: AppTheme.outlineVariant),
                             borderRadius: BorderRadius.circular(12),
@@ -360,7 +399,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 Icons.add_circle_outline,
                                 color: AppTheme.primaryBlue,
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Text(
                                 'Agregar más fotos',
                                 style: TextStyle(
@@ -377,12 +416,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               ),
             ),
 
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
 
             // Sección de descripción
             Container(
               color: Colors.white,
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -393,15 +432,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
+                          gradient: const LinearGradient(
                             colors: [Color(0xFF2563EB), Color(0xFF3B82F6)],
                           ),
                           borderRadius: BorderRadius.circular(22),
                         ),
                         child: Center(
                           child: Text(
-                            'A',
-                            style: TextStyle(
+                            _getUserInitials(),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -409,9 +448,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Text(
-                        'andres_f',
+                        _getUserDisplayName(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -421,7 +460,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     ],
                   ),
 
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
                   // Campo de descripción
                   TextField(
@@ -448,7 +487,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     ),
                   ),
 
-                  Divider(height: 32),
+                  const Divider(height: 32),
 
                   // Opciones adicionales
                   _OptionRow(
@@ -470,7 +509,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -478,8 +517,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           ? FloatingActionButton.extended(
               onPressed: _showImageSourceDialog,
               backgroundColor: AppTheme.primaryBlue,
-              icon: Icon(Icons.add_photo_alternate),
-              label: Text('Agregar foto'),
+              icon: const Icon(Icons.add_photo_alternate),
+              label: const Text('Agregar foto'),
             )
           : null,
     );
@@ -509,9 +548,9 @@ class _ImageSourceOption extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Color(0xFFF0F0FF),
+          color: const Color(0xFFF0F0FF),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -520,14 +559,14 @@ class _ImageSourceOption extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [Color(0xFF2563EB), Color(0xFF3B82F6)],
                 ),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(icon, color: Colors.white, size: 28),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -540,7 +579,7 @@ class _ImageSourceOption extends StatelessWidget {
                       color: AppTheme.onSurface,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     description,
                     style: TextStyle(
@@ -579,11 +618,11 @@ class _OptionRow extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
             Icon(icon, color: AppTheme.onSurfaceVariant, size: 24),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Text(
               label,
               style: TextStyle(
@@ -591,7 +630,7 @@ class _OptionRow extends StatelessWidget {
                 color: AppTheme.onSurface,
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Icon(
               Icons.arrow_forward_ios,
               color: Colors.grey.shade400,
