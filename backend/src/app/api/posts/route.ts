@@ -6,43 +6,107 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * GET /api/posts
  * Lista posts públicos con sus imágenes.
  */
-export async function GET() {
+export async function GET(request: Request) {
   const adminClient = createAdminClient();
 
-  const { data, error } = await adminClient
+  // 1. Obtener posts
+  const { data: postsData, error: postsError } = await adminClient
     .from("post")
-    .select(`
-      *,
-      profiles:user_id (username, avatar_url),
-      post_imagenes (
-        orden,
-        imagenes (url)
-      )
-    `)
+    .select("*")
     .order("created_at", { ascending: false })
     .limit(20);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (postsError) {
+    return NextResponse.json({ error: postsError.message }, { status: 500 });
   }
 
-  // Normalizar la respuesta para que las imágenes vengan como array
-  const normalized = data.map((post: Record<string, unknown>) => {
-    const rawImages = post.post_imagenes as Array<{
+  const posts = (postsData ?? []) as Record<string, unknown>[];
+  const userIds = [...new Set(posts.map((p) => p.user_id as string).filter(Boolean))];
+
+  // 2. Obtener perfiles de los usuarios
+  let profilesMap: Record<string, { username: string | null; avatar_url: string | null }> = {};
+  if (userIds.length > 0) {
+    const { data: profilesData } = await adminClient
+      .from("profiles")
+      .select("id, username, avatar_url")
+      .in("id", userIds);
+
+    profilesMap = Object.fromEntries(
+      (profilesData ?? []).map((profile) => [profile.id, profile])
+    );
+  }
+
+  // 3. Obtener relaciones post-imagen
+  const postIds = posts.map((p) => p.id as string);
+  let imagesMap: Record<string, string[]> = {};
+  if (postIds.length > 0) {
+    const { data: relData } = await adminClient
+      .from("post_imagenes")
+      .select("post_id, imagen_id, orden")
+      .in("post_id", postIds);
+
+    const rels = (relData ?? []) as Array<{
+      post_id: string;
+      imagen_id: string;
       orden: number;
-      imagenes: { url: string } | null;
-    }> | null;
+    }>;
 
-    const imageUrls = (rawImages ?? [])
-      .filter((pi) => pi.imagenes?.url)
-      .sort((a, b) => a.orden - b.orden)
-      .map((pi) => pi.imagenes!.url);
+    // 4. Obtener URLs de imágenes por imagen_id
+    const imageIds = [...new Set(rels.map((r) => r.imagen_id))];
+    let imageUrlsMap: Record<string, string> = {};
+    if (imageIds.length > 0) {
+      const { data: imgData } = await adminClient
+        .from("imagenes")
+        .select("id, url")
+        .in("id", imageIds);
 
-    return {
-      ...post,
-      image_urls: imageUrls,
-    };
-  });
+      imageUrlsMap = Object.fromEntries(
+        (imgData ?? []).map((img) => [img.id, img.url])
+      );
+    }
+
+    // Agrupar y ordenar imágenes por post
+    for (const rel of rels) {
+      if (!imagesMap[rel.post_id]) imagesMap[rel.post_id] = [];
+      const url = imageUrlsMap[rel.imagen_id];
+      if (url) imagesMap[rel.post_id].push(url);
+    }
+
+    for (const pid of Object.keys(imagesMap)) {
+      const sortedRels = rels
+        .filter((r) => r.post_id === pid)
+        .sort((a, b) => a.orden - b.orden);
+      imagesMap[pid] = sortedRels
+        .map((r) => imageUrlsMap[r.imagen_id])
+        .filter((url): url is string => !!url);
+    }
+  }
+
+  // 5. Si hay usuario autenticado, obtener sus likes
+  let likedPostIds = new Set<string>();
+  const token = getBearerToken(request);
+  if (token) {
+    const user = await validateToken(token);
+    if (user && postIds.length > 0) {
+      const { data: likesData } = await adminClient
+        .from("likes")
+        .select("post_id")
+        .eq("user_id", user.id)
+        .in("post_id", postIds);
+
+      likedPostIds = new Set(
+        (likesData ?? []).map((like) => like.post_id as string)
+      );
+    }
+  }
+
+  // 6. Normalizar respuesta
+  const normalized = posts.map((post) => ({
+    ...post,
+    profiles: profilesMap[post.user_id as string] ?? null,
+    image_urls: imagesMap[post.id as string] ?? [],
+    is_liked: likedPostIds.has(post.id as string),
+  }));
 
   return NextResponse.json({ data: normalized });
 }

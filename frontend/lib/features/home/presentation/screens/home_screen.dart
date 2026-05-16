@@ -5,6 +5,7 @@ import 'package:vyra/features/home/presentation/widgets/comments_bottom_sheet.da
 import 'package:vyra/features/profile/presentation/screens/profile_screen.dart';
 import 'package:vyra/features/profile/presentation/screens/profile_unknown_screen.dart';
 import 'package:vyra/features/search/presentation/screens/search_screen.dart';
+import 'package:vyra/services/post_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,71 +17,97 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   final Set<String> _followingUsers = {};
-  final Set<String> _likedPosts = {};
+  Set<String> _likedPosts = {};
 
-  final List<Map<String, dynamic>> _posts = [
-    {
-      'userId': '11111111-1111-1111-1111-111111111111',
-      'username': '@photography_lover',
-      'avatar': 'P',
-      'title': 'Atardecer en la playa de Cartagena 🌅',
-      'image':
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
-      'likes': 1240,
-      'comments': 89,
-      'timeAgo': '2h',
-    },
-    {
-      'userId': '22222222-2222-2222-2222-222222222222',
-      'username': '@nature_wild',
-      'avatar': 'N',
-      'title': 'Bosque encantado en la Amazonía',
-      'image':
-          'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800',
-      'likes': 892,
-      'comments': 45,
-      'timeAgo': '4h',
-    },
-    {
-      'userId': '33333333-3333-3333-3333-333333333333',
-      'username': '@city_explorer',
-      'avatar': 'C',
-      'title': 'Arquitectura moderna en Medellín',
-      'image':
-          'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=800',
-      'likes': 2156,
-      'comments': 156,
-      'timeAgo': '6h',
-    },
-    {
-      'userId': '44444444-4444-4444-4444-444444444444',
-      'username': '@portrait_master',
-      'avatar': 'M',
-      'title': 'Retrato natural con luz dorada ✨',
-      'image':
-          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800',
-      'likes': 3421,
-      'comments': 234,
-      'timeAgo': '8h',
-    },
-    {
-      'userId': '55555555-5555-5555-5555-555555555555',
-      'username': '@mountain_hiker',
-      'avatar': 'H',
-      'title': 'Caminata en los Andes colombianos',
-      'image':
-          'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800',
-      'likes': 1567,
-      'comments': 112,
-      'timeAgo': '12h',
-    },
-  ];
+  List<Map<String, dynamic>> _posts = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+  int _feedRevision = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFeed();
+  }
+
+  Future<void> _loadFeed() async {
+    try {
+      final posts = await PostService().getFeedPosts();
+      final likedIds = posts
+          .where((p) => p['is_liked'] == true)
+          .map((p) => p['id'] as String)
+          .toSet();
+      if (mounted) {
+        setState(() {
+          _posts = posts;
+          _likedPosts = likedIds;
+          _isLoading = false;
+          _errorMessage = null;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        });
+      }
+    }
+  }
 
   String _formatNumber(int number) {
     if (number >= 1000) {
       return '${(number / 1000).toStringAsFixed(1)}K';
     }
     return number.toString();
+  }
+
+  String _timeAgo(String? createdAt) {
+    if (createdAt == null) return 'Ahora';
+    final date = DateTime.tryParse(createdAt);
+    if (date == null) return 'Ahora';
+    final diff = DateTime.now().difference(date);
+    if (diff.inDays > 0) return '${diff.inDays}d';
+    if (diff.inHours > 0) return '${diff.inHours}h';
+    if (diff.inMinutes > 0) return '${diff.inMinutes}m';
+    return 'Ahora';
+  }
+
+  String _extractUsername(Map<String, dynamic> post) {
+    final profiles = post['profiles'] as Map<String, dynamic>?;
+    final username = profiles?['username'] as String?;
+    if (username != null && username.isNotEmpty) {
+      return username.startsWith('@') ? username : '@$username';
+    }
+    return '@usuario';
+  }
+
+  String _extractAvatarLetter(Map<String, dynamic> post) {
+    final profiles = post['profiles'] as Map<String, dynamic>?;
+    final username = profiles?['username'] as String?;
+    if (username != null && username.isNotEmpty) {
+      return username[0].toUpperCase();
+    }
+    return 'U';
+  }
+
+  String? _extractAvatarUrl(Map<String, dynamic> post) {
+    final profiles = post['profiles'] as Map<String, dynamic>?;
+    final url = profiles?['avatar_url'] as String?;
+    return (url != null && url.isNotEmpty) ? url : null;
+  }
+
+  String _extractImage(Map<String, dynamic> post) {
+    final imageUrls = post['image_urls'] as List<dynamic>?;
+    if (imageUrls != null && imageUrls.isNotEmpty) {
+      return imageUrls.first as String;
+    }
+    return '';
+  }
+
+  String _extractTitle(Map<String, dynamic> post) {
+    final desc = post['descripcion'] as String?;
+    return desc ?? '';
   }
 
   void _toggleFollow(String username) {
@@ -93,13 +120,46 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _toggleLike(String username) {
+  void _toggleLike(String postId) {
+    final previouslyLiked = _likedPosts.contains(postId);
     setState(() {
-      if (_likedPosts.contains(username)) {
-        _likedPosts.remove(username);
+      if (previouslyLiked) {
+        _likedPosts.remove(postId);
       } else {
-        _likedPosts.add(username);
+        _likedPosts.add(postId);
       }
+      // Actualizar contador local optimista
+      final index = _posts.indexWhere((p) => p['id'] == postId);
+      if (index != -1) {
+        final current = _posts[index]['likes_count'] as int? ?? 0;
+        _posts[index] = {
+          ..._posts[index],
+          'likes_count': previouslyLiked ? current - 1 : current + 1,
+        };
+      }
+    });
+
+    // Llamar al backend en background
+    PostService().toggleLike(postId).catchError((e) {
+      // Revertir en caso de error
+      if (mounted) {
+        setState(() {
+          if (previouslyLiked) {
+            _likedPosts.add(postId);
+          } else {
+            _likedPosts.remove(postId);
+          }
+          final index = _posts.indexWhere((p) => p['id'] == postId);
+          if (index != -1) {
+            final current = _posts[index]['likes_count'] as int? ?? 0;
+            _posts[index] = {
+              ..._posts[index],
+              'likes_count': previouslyLiked ? current + 1 : current - 1,
+            };
+          }
+        });
+      }
+      return false;
     });
   }
 
@@ -111,9 +171,56 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+        ),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white, size: 48),
+              const SizedBox(height: 16),
+              Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.white),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _loadFeed,
+                child: const Text('Reintentar'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_posts.isEmpty) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Text(
+            'Aún no hay publicaciones',
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: PageView.builder(
+        key: ValueKey(_feedRevision),
         controller: _pageController,
         scrollDirection: Axis.vertical,
         itemCount: _posts.length,
@@ -125,30 +232,46 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFullScreenPost(Map<String, dynamic> post) {
-    final isLiked = _likedPosts.contains(post['username']);
+    final postId = post['id'] as String? ?? '';
+    final username = _extractUsername(post);
+    final avatarLetter = _extractAvatarLetter(post);
+    final avatarUrl = _extractAvatarUrl(post);
+    final title = _extractTitle(post);
+    final imageUrl = _extractImage(post);
+    final timeAgo = _timeAgo(post['created_at'] as String?);
+    final likes = (post['likes_count'] as int?) ?? 0;
+    final comments = (post['comentarios_count'] as int?) ?? 0;
+    final isLiked = _likedPosts.contains(postId);
 
     return Stack(
       fit: StackFit.expand,
       children: [
         // Imagen de fondo
-        Image.network(
-          post['image'],
-          fit: BoxFit.cover,
-          width: double.infinity,
-          height: double.infinity,
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Container(
-              color: const Color(0xFF0D0D0D),
-              child: const Center(
-                child: CircularProgressIndicator(
-                  color: AppTheme.primaryBlue,
-                  strokeWidth: 2,
+        imageUrl.isNotEmpty
+            ? Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    color: const Color(0xFF0D0D0D),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: AppTheme.primaryBlue,
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  );
+                },
+              )
+            : Container(
+                color: const Color(0xFF0D0D0D),
+                child: const Center(
+                  child: Icon(Icons.image, color: Colors.white54, size: 64),
                 ),
               ),
-            );
-          },
-        ),
 
         // Icono de búsqueda
         Positioned(
@@ -231,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (_) => ProfileUnknownScreen(
-                                userId: (post['userId'] as String?) ?? '',
+                                userId: (post['user_id'] as String?) ?? '',
                               ),
                             ),
                           );
@@ -250,14 +373,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               child: Center(
-                                child: Text(
-                                  post['avatar'],
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                child: avatarUrl != null
+                                  ? Image.network(
+                                      avatarUrl,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => Text(
+                                        avatarLetter,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    )
+                                  : Text(
+                                      avatarLetter,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -265,7 +401,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  post['username'],
+                                  username,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,
@@ -273,7 +409,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 Text(
-                                  post['timeAgo'],
+                                  timeAgo,
                                   style: TextStyle(
                                     color: Colors.white.withAlpha(180),
                                     fontSize: 12,
@@ -287,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Spacer(),
                       // Botón Seguir estilo pill
                       GestureDetector(
-                        onTap: () => _toggleFollow(post['username']),
+                        onTap: () => _toggleFollow(username),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,
@@ -309,7 +445,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 : null,
                           ),
                           child: Text(
-                            _followingUsers.contains(post['username'])
+                            _followingUsers.contains(username)
                                 ? 'Siguiendo'
                                 : 'Seguir',
                             style: const TextStyle(
@@ -327,7 +463,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   // Título
                   Text(
-                    post['title'],
+                    title,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -343,7 +479,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       // Like con estilo pill
                       GestureDetector(
-                        onTap: () => _toggleLike(post['username']),
+                        onTap: () => _toggleLike(postId),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -366,9 +502,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                _formatNumber(
-                                  post['likes'] + (isLiked ? 1 : 0),
-                                ),
+                                _formatNumber(likes),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 13,
@@ -387,8 +521,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () {
                           CommentsBottomSheet.show(
                             context,
-                            commentCount: post['comments'],
-                            postUsername: post['username'],
+                            postId: postId,
+                            commentCount: comments,
+                            postUsername: username,
+                            onCommentAdded: (newCount) {
+                              if (!mounted) return;
+                              setState(() {
+                                _feedRevision++;
+                                final index = _posts.indexWhere(
+                                  (p) => p['id'] == postId,
+                                );
+                                if (index != -1) {
+                                  _posts[index] = {
+                                    ..._posts[index],
+                                    'comentarios_count': newCount,
+                                  };
+                                }
+                              });
+                            },
                           );
                         },
                         child: Container(
@@ -409,7 +559,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                '${post['comments']}',
+                                '$comments',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 13,
@@ -428,7 +578,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () async {
                           try {
                             await Share.share(
-                              'Mira esta publicación de ${post['username']}: ${post['title']}',
+                              'Mira esta publicación de $username: $title',
                               subject: 'Compartir publicación',
                             );
                           } catch (e) {
@@ -470,7 +620,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               try {
                                 debugPrint('Compartir presionado');
                                 await Share.share(
-                                  'Mira esta publicación de ${post['username']}: ${post['title']}',
+                                  'Mira esta publicación de $username: $title',
                                   subject: 'Compartir publicación',
                                 );
                               } catch (e) {

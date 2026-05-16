@@ -1,0 +1,57 @@
+Running `(cd /Users/miscogowgow/.pub-cache/hosted/pub.dev/objective_c-9.3.0/; TMPDIR=/var/folders/r1/w3q490p97y93j0lts3j9gybh0000gn/T/ PATH=/Users/miscogowgow/.antigravity/antigravity/bin:/Users/miscogowgow/.local/bin:/Users/miscogowgow/.yarn/bin:/Users/miscogowgow/.config/yarn/global/node_modules/.bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/Library/Apple/usr/bin HOME=/Users/miscogowgow /opt/homebrew/share/flutter/bin/cache/dart-sdk/bin/dart --packages=/Users/miscogowgow/Documents/vyra/vyra/.dart_tool/package_config.json /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/objective_c/5f31b8d621/hook.dill --config=/Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/objective_c/5f31b8d621/input.json )`.
+INFO: 2026-04-19 23:13:59.599143: Running `/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang --version`.
+
+INFO: 2026-04-19 23:13:59.613573: Running `/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang --version`.
+
+INFO: 2026-04-19 23:13:59.630381: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -target x86_64-apple-darwin -mmacos-version-min=13 -c /Users/miscogowgow/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/include/dart_api_dl.c -fpic -I src -o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/include/dart_api_dl.c.o
+
+INFO: 2026-04-19 23:13:59.631163: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -target x86_64-apple-darwin -mmacos-version-min=13 -c /Users/miscogowgow/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/objective_c.c -fpic -I src -o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/objective_c.c.o
+
+INFO: 2026-04-19 23:13:59.631706: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -target x86_64-apple-darwin -mmacos-version-min=13 -x objective-c -fobjc-arc -c /Users/miscogowgow/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/input_stream_adapter.m -fpic -I src -o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objectiINFO: 2026-04-19 23:13:59.631807: Running: /ApplicationsINFO: 2026-04-19 23:13:59.632077: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -target x86_64-apple-darwin -mmacos-version-min=13 -x objective-c -fobjc-arc -c /Users/miscogowgow/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/protocol.m -fpic -I src -o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/protocol.m.o
+
+tions/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -target x86_64-apple-darwin -mmacos-version-min=13 -x objective-c -fobjc-arc -c /Users/miscogowgow/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/observer.m -fpic -I src -o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/observer.m.o
+INFO: 2026-04-19 23:13:59.631993: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -target x86_64-apple-darwin -mmacos-version-min=13 -x objective-c -fobjc-arc -c /Users/miscogowgow/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/ns_number.m -fpic -I src -o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/ns_number.m.o
+
+INFO: 2026-04-19 23:13:59.632169: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -target x86_64-apple-darwin -mmacos-version-min=13 -x objective-c -fobjc-arc -c /Users/miscogowgow/.pub-cache/hosted/pub.dev/objective_c-9.3.0/src/objective_c_bindings_generated.m -fpic -I src -o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/objective_c_bindings_generated.m.o
+
+INFO: 2026-04-19 23:13:59.707195: 
+INFO: 2026-04-19 23:13:59.707303: 
+INFO: 2026-04-19 23:13:59.707331: Generated /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/objective_c.c.o
+
+INFO: 2026-04-19 23:13:59.717995: 
+INFO: 2026-04-19 23:13:59.718064: 
+INFO: 2026-04-19 23:13:59.718087: Generated /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/test/util.c.o
+
+INFO: 2026-04-19 23:13:59.719085: 
+INFO: 2026-04-19 23:13:59.719137: 
+INFO: 2026-04-19 23:13:59.719157: Generated /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/include/dart_api_dl.c.o
+
+INFO: 2026-04-19 23:13:59.729210: 
+INFO: 2026-04-19 23:13:59.729247: 
+INFO: 2026-04-19 23:13:59.729257: Generated /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/protocol.m.o
+INFO: 2026-04-19 23:13:59.729299: 
+INFO: 2026-04-19 23:13:59.729310: 
+INFO: 2026-04-19 23:13:59.729317: Generated /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/observer.m.o
+
+INFO: 2026-04-19 23:13:59.889205: 
+INFO: 2026-04-19 23:13:59.889245: 
+INFO: 2026-04-19 23:13:59.889255: Generated /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/input_stream_adapter.m.o
+
+INFO: 2026-04-19 23:13:59.894017: 
+INFO: 2026-04-19 23:13:59.894056: 
+INFO: 2026-04-19 23:13:59.894066: Generated /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/objective_c.m.o
+
+INFO: 2026-04-19 23:13:59.898957: 
+INFO: 2026-04-19 23:13:59.898993: 
+INFO: 2026-04-19 23:13:59.899002: Generated /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/ns_number.m.o
+
+INFO: 2026-04-19 23:13:59.920217: 
+INFO: 2026-04-19 23:13:59.920251: 
+INFO: 2026-04-19 23:13:59.920260: Generated /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/objective_c_bindings_generated.m.o
+
+INFO: 2026-04-19 23:13:59.920522: Running: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -shared -Wl,-encryptable -undefined dynamic_lookup -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk -target x86_64-apple-darwin -mmacos-version-min=13 /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/include/dart_api_dl.c.o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/objective_c.c.o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/test/util.c.o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/input_stream_adapter.m.o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/objective_c.m.o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/observer.m.o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/ns_number.m.o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/protocol.m.o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/obj/src/objective_c_bindings_generated.m.o -o /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/objective_c.dylib
+
+INFO: 2026-04-19 23:13:59.949268: 
+INFO: 2026-04-19 23:13:59.949324: 
+INFO: 2026-04-19 23:13:59.949336: Generated /Users/miscogowgow/Documents/vyra/vyra/.dart_tool/hooks_runner/shared/objective_c/build/5f31b8d621/objective_c.dylib
+

@@ -89,6 +89,26 @@ class PostService {
   }
 
   // ──────────────────────────────────────────
+  // Obtener feed público (todos los posts)
+  // ──────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> getFeedPosts() async {
+    final response = await http.get(
+      Uri.parse(ApiConstants.posts),
+      headers: await _headers(auth: false),
+    ).timeout(const Duration(seconds: 15));
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode != 200) {
+      throw Exception(body['error'] ?? 'Error al obtener el feed');
+    }
+
+    final data = body['data'] as List<dynamic>?;
+    return data?.cast<Map<String, dynamic>>() ?? [];
+  }
+
+  // ──────────────────────────────────────────
   // Obtener mis publicaciones
   // ──────────────────────────────────────────
 
@@ -130,6 +150,68 @@ class PostService {
 
     if (response.statusCode != 201) {
       throw Exception(body['error'] ?? 'Error al crear la publicación');
+    }
+
+    return body['data'] as Map<String, dynamic>;
+  }
+
+  // ──────────────────────────────────────────
+  // Likes
+  // ──────────────────────────────────────────
+
+  Future<bool> toggleLike(String postId) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.posts}/$postId/like'),
+      headers: await _headers(auth: true),
+    ).timeout(const Duration(seconds: 15));
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode != 200) {
+      throw Exception(body['error'] ?? 'Error al procesar like');
+    }
+
+    return body['liked'] as bool;
+  }
+
+  // ──────────────────────────────────────────
+  // Comentarios
+  // ──────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> getComments(String postId) async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.posts}/$postId/comments'),
+      headers: await _headers(auth: false),
+    ).timeout(const Duration(seconds: 15));
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode != 200) {
+      throw Exception(body['error'] ?? 'Error al obtener comentarios');
+    }
+
+    final data = body['data'] as List<dynamic>?;
+    return data?.cast<Map<String, dynamic>>() ?? [];
+  }
+
+  Future<Map<String, dynamic>> createComment({
+    required String postId,
+    required String contenido,
+    String? parentId,
+  }) async {
+    final response = await http.post(
+      Uri.parse('${ApiConstants.posts}/$postId/comments'),
+      headers: await _headers(auth: true),
+      body: jsonEncode({
+        'contenido': contenido,
+        if (parentId != null) 'parent_id': parentId,
+      }),
+    ).timeout(const Duration(seconds: 15));
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode != 201) {
+      throw Exception(body['error'] ?? 'Error al crear comentario');
     }
 
     return body['data'] as Map<String, dynamic>;
