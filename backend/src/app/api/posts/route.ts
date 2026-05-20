@@ -105,21 +105,33 @@ export async function GET(request: Request) {
   const likesCountMap: Record<string, number> = {};
   const commentsCountMap: Record<string, number> = {};
   if (postIds.length > 0) {
-    const { data: allLikes } = await adminClient
+    const { data: allLikes, error: likesErr } = await adminClient
       .from("likes")
       .select("post_id")
       .in("post_id", postIds);
+    if (likesErr) {
+      console.error("[posts] Error contando likes:", likesErr.message);
+    }
     for (const row of (allLikes ?? []) as Array<{ post_id: string }>) {
       likesCountMap[row.post_id] = (likesCountMap[row.post_id] ?? 0) + 1;
     }
 
-    const { data: allComments } = await adminClient
+    const { data: allComments, error: commentsErr } = await adminClient
       .from("comentarios")
       .select("post_id")
       .in("post_id", postIds);
+    if (commentsErr) {
+      console.error("[posts] Error contando comentarios:", commentsErr.message);
+    }
     for (const row of (allComments ?? []) as Array<{ post_id: string }>) {
       commentsCountMap[row.post_id] = (commentsCountMap[row.post_id] ?? 0) + 1;
     }
+
+    console.log(
+      `[posts] Feed: ${postIds.length} posts, ${
+        (allLikes ?? []).length
+      } likes totales, ${(allComments ?? []).length} comentarios totales`
+    );
   }
 
   // 6. Normalizar respuesta
