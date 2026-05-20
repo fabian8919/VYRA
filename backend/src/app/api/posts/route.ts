@@ -100,12 +100,36 @@ export async function GET(request: Request) {
     }
   }
 
+  // 5.b. Contar likes y comentarios reales desde las tablas (evita usar los
+  // contadores denormalizados que podrían estar desincronizados).
+  const likesCountMap: Record<string, number> = {};
+  const commentsCountMap: Record<string, number> = {};
+  if (postIds.length > 0) {
+    const { data: allLikes } = await adminClient
+      .from("likes")
+      .select("post_id")
+      .in("post_id", postIds);
+    for (const row of (allLikes ?? []) as Array<{ post_id: string }>) {
+      likesCountMap[row.post_id] = (likesCountMap[row.post_id] ?? 0) + 1;
+    }
+
+    const { data: allComments } = await adminClient
+      .from("comentarios")
+      .select("post_id")
+      .in("post_id", postIds);
+    for (const row of (allComments ?? []) as Array<{ post_id: string }>) {
+      commentsCountMap[row.post_id] = (commentsCountMap[row.post_id] ?? 0) + 1;
+    }
+  }
+
   // 6. Normalizar respuesta
   const normalized = posts.map((post) => ({
     ...post,
     profiles: profilesMap[post.user_id as string] ?? null,
     image_urls: imagesMap[post.id as string] ?? [],
     is_liked: likedPostIds.has(post.id as string),
+    likes_count: likesCountMap[post.id as string] ?? 0,
+    comentarios_count: commentsCountMap[post.id as string] ?? 0,
   }));
 
   return NextResponse.json({ data: normalized });
