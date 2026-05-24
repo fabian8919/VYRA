@@ -49,7 +49,15 @@ export async function GET(
     profiles: profilesMap[comment.user_id as string] ?? null,
   }));
 
-  return NextResponse.json({ data: normalized });
+  return NextResponse.json(
+    { data: normalized },
+    {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        Pragma: "no-cache",
+      },
+    }
+  );
 }
 
 /**
@@ -130,5 +138,14 @@ export async function POST(
 
   // El contador comentarios_count se actualiza automáticamente por el trigger
   // `on_comment_change` definido en la migración.
-  return NextResponse.json({ data: normalized }, { status: 201 });
+  return NextResponse.json(
+    { data: normalized },
+    {
+      status: 201,
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        Pragma: "no-cache",
+      },
+    }
+  );
 }

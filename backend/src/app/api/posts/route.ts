@@ -149,7 +149,15 @@ export async function GET(request: Request) {
     comentarios_count: commentsCountMap[post.id as string] ?? 0,
   }));
 
-  return NextResponse.json({ data: normalized });
+  return NextResponse.json(
+    { data: normalized },
+    {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        Pragma: "no-cache",
+      },
+    }
+  );
 }
 
 /**

@@ -93,9 +93,15 @@ class PostService {
   // ──────────────────────────────────────────
 
   Future<List<Map<String, dynamic>>> getFeedPosts() async {
+    // Cache-busting con timestamp para evitar cualquier caché intermedio.
+    final url = '${ApiConstants.posts}?_t=${DateTime.now().millisecondsSinceEpoch}';
+    final headers = await _headers(authOptional: true);
+    headers['Cache-Control'] = 'no-cache';
+    headers['Pragma'] = 'no-cache';
+
     final response = await http.get(
-      Uri.parse(ApiConstants.posts),
-      headers: await _headers(authOptional: true),
+      Uri.parse(url),
+      headers: headers,
     ).timeout(const Duration(seconds: 15));
 
     final body = jsonDecode(response.body) as Map<String, dynamic>;

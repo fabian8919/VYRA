@@ -74,8 +74,16 @@ export async function POST(
     .select("id", { count: "exact", head: true })
     .eq("post_id", postId);
 
-  return NextResponse.json({
-    liked,
-    likes_count: likesCount ?? 0,
-  });
+  return NextResponse.json(
+    {
+      liked,
+      likes_count: likesCount ?? 0,
+    },
+    {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        Pragma: "no-cache",
+      },
+    }
+  );
 }
