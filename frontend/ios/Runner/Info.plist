@@ -53,6 +53,10 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Permite guardar las imágenes que quieras descargar en tu galería de fotos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Permite guardar las imágenes que quieras descargar en tu galería de fotos.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

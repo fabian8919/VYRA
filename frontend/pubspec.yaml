@@ -54,6 +54,12 @@ dependencies:
   # HTTP client for backend API
   http: ^1.2.0
 
+  # Save images to gallery
+  image_gallery_saver: ^2.0.3
+
+  # Path provider for temporary files
+  path_provider: ^2.1.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

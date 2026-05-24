@@ -1,4 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/features/home/presentation/widgets/comments_bottom_sheet.dart';
@@ -36,6 +40,15 @@ class _HomeScreenState extends State<HomeScreen> {
           .where((p) => p['is_liked'] == true)
           .map((p) => p['id'] as String)
           .toSet();
+      // Logs de diagnóstico para verificar lo que llega del backend.
+      debugPrint('[HomeScreen] Feed recibido: ${posts.length} posts');
+      for (final p in posts) {
+        debugPrint(
+          '[HomeScreen] post=${p['id']} is_liked=${p['is_liked']} '
+          'likes_count=${p['likes_count']} comentarios=${p['comentarios_count']}',
+        );
+      }
+      debugPrint('[HomeScreen] _likedPosts inicial: $likedIds');
       if (mounted) {
         setState(() {
           _posts = posts;
@@ -107,6 +120,56 @@ class _HomeScreenState extends State<HomeScreen> {
   String _extractTitle(Map<String, dynamic> post) {
     final desc = post['descripcion'] as String?;
     return desc ?? '';
+  }
+
+  Future<void> _downloadImage(String imageUrl, BuildContext context) async {
+    if (imageUrl.isEmpty) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No hay imagen para descargar')),
+        );
+      }
+      return;
+    }
+
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode != 200) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error al descargar la imagen')),
+          );
+        }
+        return;
+      }
+
+      final result = await ImageGallerySaver.saveImage(
+        response.bodyBytes,
+        quality: 100,
+        name: 'vyra_${DateTime.now().millisecondsSinceEpoch}',
+      );
+
+      if (context.mounted) {
+        bool success = false;
+        if (result is bool) success = result;
+        if (result is Map) success = result.isNotEmpty;
+        if (result is String) success = result.isNotEmpty;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              success ? 'Imagen guardada en la galería' : 'Error al guardar la imagen',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error descargando imagen: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al descargar la imagen')),
+        );
+      }
+    }
   }
 
   void _toggleFollow(String username) {
@@ -629,6 +692,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onSelected: (value) async {
                           switch (value) {
                             case 'download':
+                              await _downloadImage(imageUrl, context);
                               break;
                             case 'share':
                               try {
