@@ -29,13 +29,15 @@ export async function POST(
   const { id: postId } = await params;
   const adminClient = createAdminClient();
 
-  // Verificar si ya existe el like
+  // Verificar si ya existe el like (maybeSingle evita errores si no hay fila).
   const { data: existingLike } = await adminClient
     .from("likes")
-    .select("*")
+    .select("id")
     .eq("post_id", postId)
     .eq("user_id", user.id)
-    .single();
+    .maybeSingle();
+
+  let liked: boolean;
 
   if (existingLike) {
     // Quitar like
@@ -48,22 +50,32 @@ export async function POST(
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-
-    // El contador likes_count se actualiza automáticamente por el trigger
-    // `on_like_change` definido en la migración.
-    return NextResponse.json({ liked: false });
+    liked = false;
   } else {
-    // Dar like
+    // Dar like. Usamos insert simple; la constraint UNIQUE(post_id, user_id)
+    // garantiza que un usuario solo puede dar un like por post.
     const { error } = await adminClient
       .from("likes")
       .insert({ post_id: postId, user_id: user.id });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      // Si la fila ya existía por una carrera, lo tratamos como "ya tiene like".
+      if (error.code !== "23505") {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
     }
-
-    // El contador likes_count se actualiza automáticamente por el trigger
-    // `on_like_change` definido en la migración.
-    return NextResponse.json({ liked: true });
+    liked = true;
   }
+
+  // Contar likes reales en tiempo real para sincronizar el cliente,
+  // independientemente del estado del campo denormalizado `likes_count`.
+  const { count: likesCount } = await adminClient
+    .from("likes")
+    .select("id", { count: "exact", head: true })
+    .eq("post_id", postId);
+
+  return NextResponse.json({
+    liked,
+    likes_count: likesCount ?? 0,
+  });
 }

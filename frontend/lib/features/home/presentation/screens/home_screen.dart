@@ -22,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> _posts = [];
   bool _isLoading = true;
   String? _errorMessage;
-  int _feedRevision = 0;
 
   @override
   void initState() {
@@ -139,8 +138,26 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
 
-    // Llamar al backend en background
-    PostService().toggleLike(postId).catchError((e) {
+    // Llamar al backend en background y sincronizar con el conteo real.
+    PostService().toggleLike(postId).then((result) {
+      if (!mounted) return;
+      final liked = result['liked'] as bool;
+      final realCount = result['likes_count'] as int;
+      setState(() {
+        if (liked) {
+          _likedPosts.add(postId);
+        } else {
+          _likedPosts.remove(postId);
+        }
+        final index = _posts.indexWhere((p) => p['id'] == postId);
+        if (index != -1) {
+          _posts[index] = {
+            ..._posts[index],
+            'likes_count': realCount,
+          };
+        }
+      });
+    }).catchError((e) {
       // Revertir en caso de error
       if (mounted) {
         setState(() {
@@ -159,7 +176,6 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         });
       }
-      return false;
     });
   }
 
@@ -220,7 +236,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: PageView.builder(
-        key: ValueKey(_feedRevision),
         controller: _pageController,
         scrollDirection: Axis.vertical,
         itemCount: _posts.length,
@@ -527,7 +542,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             onCommentAdded: (newCount) {
                               if (!mounted) return;
                               setState(() {
-                                _feedRevision++;
                                 final index = _posts.indexWhere(
                                   (p) => p['id'] == postId,
                                 );

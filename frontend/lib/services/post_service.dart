@@ -159,7 +159,9 @@ class PostService {
   // Likes
   // ──────────────────────────────────────────
 
-  Future<bool> toggleLike(String postId) async {
+  /// Hace toggle del like en el post. Devuelve un Map con `liked` (bool) y
+  /// `likes_count` (int) con el conteo real del servidor.
+  Future<Map<String, dynamic>> toggleLike(String postId) async {
     final response = await http.post(
       Uri.parse('${ApiConstants.posts}/$postId/like'),
       headers: await _headers(auth: true),
@@ -171,7 +173,10 @@ class PostService {
       throw Exception(body['error'] ?? 'Error al procesar like');
     }
 
-    return body['liked'] as bool;
+    return {
+      'liked': body['liked'] as bool? ?? false,
+      'likes_count': (body['likes_count'] as int?) ?? 0,
+    };
   }
 
   // ──────────────────────────────────────────
