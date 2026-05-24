@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { validateToken, getBearerToken } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+// Forzar que la respuesta sea siempre dinámica (sin caché). El feed depende
+// del usuario autenticado (likes) y del estado en DB en tiempo real.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 /**
  * GET /api/posts
  * Lista posts públicos con sus imágenes.

@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { validateToken, getBearerToken } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+// Sin caché: los comentarios cambian con frecuencia.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 /**
  * GET /api/posts/:id/comments
  * Lista comentarios de un post con perfil del autor.

@@ -15,13 +15,13 @@ class PostService {
   // Headers comunes
   // ──────────────────────────────────────────
 
-  Future<Map<String, String>> _headers({bool auth = false}) async {
+  Future<Map<String, String>> _headers({bool auth = false, bool authOptional = false}) async {
     final headers = <String, String>{
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
 
-    if (auth) {
+    if (auth || authOptional) {
       final token = await _authService.getAccessToken();
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
@@ -95,7 +95,7 @@ class PostService {
   Future<List<Map<String, dynamic>>> getFeedPosts() async {
     final response = await http.get(
       Uri.parse(ApiConstants.posts),
-      headers: await _headers(auth: false),
+      headers: await _headers(authOptional: true),
     ).timeout(const Duration(seconds: 15));
 
     final body = jsonDecode(response.body) as Map<String, dynamic>;
