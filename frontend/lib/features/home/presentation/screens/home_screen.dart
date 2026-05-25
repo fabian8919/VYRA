@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:vision_gallery_saver/vision_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:vyra/core/theme/app_theme.dart';
@@ -143,17 +143,14 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
-      final result = await ImageGallerySaver.saveImage(
+      final result = await VisionGallerySaver.saveImage(
         response.bodyBytes,
         quality: 100,
         name: 'vyra_${DateTime.now().millisecondsSinceEpoch}',
       );
 
       if (context.mounted) {
-        bool success = false;
-        if (result is bool) success = result;
-        if (result is Map) success = result.isNotEmpty;
-        if (result is String) success = result.isNotEmpty;
+        final bool success = result['isSuccess'] == true;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
