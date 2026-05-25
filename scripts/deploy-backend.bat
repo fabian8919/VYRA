@@ -32,7 +32,7 @@ if %errorlevel% == 0 (
 echo.
 echo [2/2] Deployando a Vercel...
 cd backend
-vercel --prod
+npx vercel --prod
 
 echo.
 echo ============================================
