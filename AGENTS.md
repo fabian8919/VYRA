@@ -80,35 +80,29 @@
 
 ## Deploy del backend a Vercel
 
-El backend se deploya automáticamente a Vercel cuando se hace **push a GitHub** (Vercel está vinculado al repo).
+El deploy se hace **manualmente con Vercel CLI** (`vercel --prod`). Los pushes a GitHub guardan el código pero no deployan automáticamente.
 
 ### Opción rápida (script)
 Desde la raíz del proyecto:
-
-**Windows (CMD/Git Bash):**
-```bash
-bash scripts/deploy-backend.sh
-```
 
 **Windows (doble clic):**
 ```
 scripts\deploy-backend.bat
 ```
 
-**Linux/macOS:**
+**Git Bash / Linux / macOS:**
 ```bash
-./scripts/deploy-backend.sh
+bash scripts/deploy-backend.sh
 ```
 
 ### Manual
 ```bash
-git add backend/
-git commit -m "backend: <mensaje>"
-git push origin main
+cd backend
+vercel --prod
 ```
 
-Vercel detectará el push y hará deploy en ~30-60 segundos.
-URL: `https://project-ax22f.vercel.app`
+El CLI te pedirá confirmar el proyecto y la rama. Una vez terminado, la URL queda actualizada:
+`https://project-ax22f.vercel.app`
 
 ## Pendientes / próximos pasos sugeridos
 

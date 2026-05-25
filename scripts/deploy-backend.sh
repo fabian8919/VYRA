@@ -2,7 +2,7 @@
 set -e
 
 echo "============================================"
-echo "  DEPLOY BACKEND A VERCEL (via Git push)"
+echo "  DEPLOY BACKEND A VERCEL (via CLI)"
 echo "============================================"
 echo ""
 
@@ -13,37 +13,27 @@ if [ ! -d ".git" ]; then
     exit 1
 fi
 
-# Verificar si hay cambios en backend/
-if git diff --quiet --cached backend/ 2>/dev/null && git diff --quiet backend/ 2>/dev/null; then
-    echo "[INFO] No hay cambios pendientes en backend/"
-    exit 0
-fi
-
-echo "Cambios detectados en backend/:"
-git status --short backend/
-echo ""
-
-# Pedir mensaje de commit
-read -rp "Escribe el mensaje del commit (o deja vacío para 'update backend'): " COMMIT_MSG
-COMMIT_MSG=${COMMIT_MSG:-update backend}
-
-echo ""
-echo "[1/3] Agregando cambios..."
+echo "[1/2] Haciendo commit de cambios del backend..."
 git add backend/
 
-echo "[2/3] Creando commit..."
-git commit -m "backend: $COMMIT_MSG"
+if git diff --cached --quiet; then
+    echo "[INFO] No hay cambios nuevos en backend/ para commitear."
+else
+    read -rp "Escribe el mensaje del commit (o deja vacío para 'update backend'): " COMMIT_MSG
+    COMMIT_MSG=${COMMIT_MSG:-update backend}
+    git commit -m "backend: $COMMIT_MSG"
+    git push origin "$(git branch --show-current)"
+fi
 
-echo "[3/3] Subiendo a GitHub..."
-git push origin "$(git branch --show-current)"
+echo ""
+echo "[2/2] Deployando a Vercel..."
+cd backend
+vercel --prod
 
 echo ""
 echo "============================================"
-echo "  ¡DEPLOY INICIADO!"
+echo "  ¡DEPLOY COMPLETADO!"
 echo "============================================"
-echo ""
-echo "Vercel detectará el push y hará deploy auto-"
-echo "máticamente en unos segundos."
 echo ""
 echo "URL del proyecto: https://project-ax22f.vercel.app"
 echo ""

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "deploy": "cd .. && bash scripts/deploy-backend.sh"
+    "deploy": "vercel --prod"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
