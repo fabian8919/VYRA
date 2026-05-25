@@ -5,24 +5,38 @@ import { createAdminClient } from "@/lib/supabase/admin";
 /**
  * GET /api/users/me/posts
  * Lista los posts del usuario autenticado con sus imágenes.
+ *
+ * Query param opcional: ?userId=xxx
+ * Si se proporciona, devuelve los posts públicos de ese usuario (sin requerir auth).
  */
 export async function GET(request: Request) {
-  const token = getBearerToken(request);
+  const { searchParams } = new URL(request.url);
+  const userIdParam = searchParams.get("userId");
 
-  if (!token) {
-    return NextResponse.json(
-      { error: "Token de autorización requerido" },
-      { status: 401 }
-    );
-  }
+  let targetUserId: string;
 
-  const user = await validateToken(token);
+  if (userIdParam) {
+    targetUserId = userIdParam;
+  } else {
+    const token = getBearerToken(request);
 
-  if (!user) {
-    return NextResponse.json(
-      { error: "Token inválido o expirado" },
-      { status: 401 }
-    );
+    if (!token) {
+      return NextResponse.json(
+        { error: "Token de autorización requerido" },
+        { status: 401 }
+      );
+    }
+
+    const user = await validateToken(token);
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Token inválido o expirado" },
+        { status: 401 }
+      );
+    }
+
+    targetUserId = user.id;
   }
 
   const adminClient = createAdminClient();
@@ -31,7 +45,7 @@ export async function GET(request: Request) {
   const { data: postsData, error: postsError } = await adminClient
     .from("post")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", targetUserId)
     .order("created_at", { ascending: false });
 
   if (postsError) {
