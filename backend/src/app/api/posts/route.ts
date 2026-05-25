@@ -12,6 +12,17 @@ export const revalidate = 0;
  * Lista posts públicos con sus imágenes.
  */
 export async function GET(request: Request) {
+  // Debug query params on Vercel
+  const url = new URL(request.url);
+  if (url.searchParams.get("debug") === "1") {
+    return NextResponse.json({
+      debug: true,
+      url: request.url,
+      search: url.search,
+      id: url.searchParams.get("id"),
+    });
+  }
+
   const adminClient = createAdminClient();
 
   // 1. Obtener posts
