@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+// Forzar runtime Node.js para evitar 404 en rutas dinámicas en Vercel
+export const runtime = "nodejs";
+
 /**
  * GET /api/users/[id]/posts
  *
