@@ -335,6 +335,30 @@ class AuthService {
     }
   }
 
+  Future<Map<String, dynamic>?> getPublicProfile(String userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse(ApiConstants.userProfile(userId)),
+        headers: await _headers(auth: true),
+      ).timeout(const Duration(seconds: 15));
+
+      debugPrint('[getPublicProfile] status: ${response.statusCode}');
+      debugPrint('[getPublicProfile] body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        return body;
+      }
+      throw Exception('Error ${response.statusCode}: ${response.body}');
+    } on SocketException catch (e) {
+      debugPrint('[getPublicProfile] SocketException: $e');
+      rethrow;
+    } catch (e) {
+      debugPrint('[getPublicProfile] error: $e');
+      rethrow;
+    }
+  }
+
   // ──────────────────────────────────────────
   // Actualizar perfil vía backend
   // ──────────────────────────────────────────

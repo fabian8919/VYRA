@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:vyra/core/theme/app_theme.dart';
 import 'package:vyra/services/auth_service.dart';
+import 'package:vyra/services/post_service.dart';
 
 class ProfileUnknownScreen extends StatefulWidget {
   final String userId;
@@ -15,7 +16,9 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
   final _authService = AuthService();
   bool _isGridView = true;
   bool _isLoadingProfile = true;
+  bool _isLoadingPosts = true;
   Map<String, dynamic>? _profileData;
+  List<Map<String, dynamic>> _userPosts = [];
   final ScrollController _scrollController = ScrollController();
   
 
@@ -58,80 +61,8 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
   List<Map<String, dynamic>> _followers = [];
   List<Map<String, dynamic>> _following = [];
 
-  final List<Map<String, dynamic>> _userPosts = [
-    {
-      'image':
-          'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
-      'likes': 1234,
-      'views': 5678,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-      'likes': 892,
-      'views': 3456,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=400',
-      'likes': 2156,
-      'views': 8901,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
-      'likes': 3421,
-      'views': 12345,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400',
-      'likes': 567,
-      'views': 2345,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=400',
-      'likes': 1890,
-      'views': 6789,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=400',
-      'likes': 2341,
-      'views': 8765,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400',
-      'likes': 445,
-      'views': 1890,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400',
-      'likes': 1567,
-      'views': 5432,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400',
-      'likes': 2100,
-      'views': 8900,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400',
-      'likes': 1800,
-      'views': 7200,
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400',
-      'likes': 3200,
-      'views': 15000,
-    },
-  ];
+  // Posts reales del usuario visitado (se cargan desde el backend)
+
 
   @override
   void initState() {
@@ -140,11 +71,12 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
     _followers = List<Map<String, dynamic>>.from(_followersData);
     _following = List<Map<String, dynamic>>.from(_followingData);
     _loadProfile();
+    _loadPosts();
   }
 
   Future<void> _loadProfile() async {
     try {
-      final profile = await _authService.getProfile(widget.userId);
+      final profile = await _authService.getPublicProfile(widget.userId);
       if (mounted) {
         setState(() {
           _profileData = profile;
@@ -152,8 +84,26 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
         });
       }
     } catch (e) {
+      debugPrint('[_loadProfile] error: $e');
       if (mounted) {
         setState(() => _isLoadingProfile = false);
+      }
+    }
+  }
+
+  Future<void> _loadPosts() async {
+    try {
+      final posts = await PostService().getUserPosts(widget.userId);
+      if (mounted) {
+        setState(() {
+          _userPosts = posts;
+          _isLoadingPosts = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('[_loadPosts] error: $e');
+      if (mounted) {
+        setState(() => _isLoadingPosts = false);
       }
     }
   }
@@ -193,9 +143,10 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
       );
     }
 
-    final user = _authService.currentUser;
+    final postsCount = _profileData?['posts_count'] ?? 0;
+
     final nickName = _getProfileValue('username', _userData['name']);
-    final fullName = user?.metadata?['full_name'] as String?;
+    final fullName = _profileData?['full_name'] as String?;
     final userBio = _getProfileValue('bio', _userData['bio']);
     final avatarUrl = _profileData?['avatar_url'] as String?;
 
@@ -334,7 +285,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                         Expanded(
                           child: _buildStat(
                             'Posts',
-                            _userData['postsCount'].toString(),
+                            postsCount.toString(),
                             Icons.grid_on,
                           ),
                         ),
@@ -342,7 +293,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                         Expanded(
                           child: _buildStat(
                             'Likes',
-                            _formatNumber(_userData['totalLikes']),
+                            _formatNumber(_profileData?['total_likes']),
                             Icons.favorite,
                           ),
                         ),
@@ -350,7 +301,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                         Expanded(
                           child: _buildStat(
                             'Vistas',
-                            _formatNumber(_userData['totalViews']),
+                            _formatNumber(_profileData?['total_views']),
                             Icons.visibility,
                           ),
                         ),
@@ -373,7 +324,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                           flex: 2,
                           child: _buildStatClickable(
                             'Seguidores',
-                            _formatNumber(_userData['followers']),
+                            _formatNumber(_profileData?['followers'] ?? 0),
                             Icons.people_outline,
                             () => _showUsersModal(context, 'Seguidores', _followers),
                           ),
@@ -384,7 +335,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                           flex: 2,
                           child: _buildStatClickable(
                             'Siguiendo',
-                            _formatNumber(_userData['following']),
+                            _formatNumber(_profileData?['following'] ?? 0),
                             Icons.person_add_outlined,
                             () => _showUsersModal(context, 'Siguiendo', _following),
                           ),
@@ -470,8 +421,22 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                   childAspectRatio: 0.85,
                 ),
                 delegate: SliverChildBuilderDelegate((context, index) {
+                  if (_isLoadingPosts) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: AppTheme.primaryBlue,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    );
+                  }
                   return _buildImageCard(_userPosts[index]);
-                }, childCount: _userPosts.length),
+                }, childCount: _isLoadingPosts ? 6 : _userPosts.length),
               ),
             ),
 
@@ -558,6 +523,11 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
   }
 
   Widget _buildImageCard(Map<String, dynamic> post) {
+    final imageUrls = post['image_urls'] as List<dynamic>?;
+    final imageUrl = (imageUrls != null && imageUrls.isNotEmpty)
+        ? imageUrls.first as String
+        : '';
+
     return GestureDetector(
       onTap: () {},
       child: Container(
@@ -576,22 +546,24 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.network(
-                post['image'],
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    color: Colors.grey.shade100,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: AppTheme.primaryBlue,
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  );
-                },
-              ),
+              imageUrl.isNotEmpty
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          color: Colors.grey.shade100,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: AppTheme.primaryBlue,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Container(color: Colors.grey.shade300),
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -614,7 +586,7 @@ class _ProfileUnknownScreenState extends State<ProfileUnknownScreen> {
                       Icon(Icons.favorite, color: Colors.white, size: 14),
                       SizedBox(width: 4),
                       Text(
-                        _formatNumber(post['likes'] ?? 0),
+                        _formatNumber(post['likes_count'] ?? 0),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,

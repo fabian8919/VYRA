@@ -115,6 +115,26 @@ class PostService {
   }
 
   // ──────────────────────────────────────────
+  // Obtener publicaciones de cualquier usuario
+  // ──────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> getUserPosts(String userId) async {
+    final response = await http.get(
+      Uri.parse(ApiConstants.userPosts(userId)),
+      headers: await _headers(auth: true),
+    ).timeout(const Duration(seconds: 15));
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode != 200) {
+      throw Exception(body['error'] ?? 'Error al obtener publicaciones');
+    }
+
+    final data = body['data'] as List<dynamic>?;
+    return data?.cast<Map<String, dynamic>>() ?? [];
+  }
+
+  // ──────────────────────────────────────────
   // Obtener mis publicaciones
   // ──────────────────────────────────────────
 

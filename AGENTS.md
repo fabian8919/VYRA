@@ -28,6 +28,8 @@
 | `/api/users/me` | GET | Perfil completo (+ `posts_count`) |
 | `/api/users/me` | PATCH | Editar perfil (username, bio, avatar_url, full_name) |
 | `/api/users/me/posts` | GET | Posts del usuario autenticado con imágenes |
+| `/api/users/:id` | GET | Perfil público de cualquier usuario |
+| `/api/users/:id/posts` | GET | Posts públicos de cualquier usuario |
 | `/api/posts` | GET | Feed público de posts |
 | `/api/posts` | POST | Crear post con imágenes |
 
@@ -75,6 +77,38 @@
 - `PostDetailScreen`: vista tipo Instagram del post (carrusel, descripción, fecha, acciones)
 - `CreatePostScreen`: selección múltiple de imágenes, preview, descripción, publicar
 - `EditProfileScreen`: edición de perfil + avatar (sube a Storage)
+
+## Deploy del backend a Vercel
+
+El backend se deploya automáticamente a Vercel cuando se hace **push a GitHub** (Vercel está vinculado al repo).
+
+### Opción rápida (script)
+Desde la raíz del proyecto:
+
+**Windows (CMD/Git Bash):**
+```bash
+bash scripts/deploy-backend.sh
+```
+
+**Windows (doble clic):**
+```
+scripts\deploy-backend.bat
+```
+
+**Linux/macOS:**
+```bash
+./scripts/deploy-backend.sh
+```
+
+### Manual
+```bash
+git add backend/
+git commit -m "backend: <mensaje>"
+git push origin main
+```
+
+Vercel detectará el push y hará deploy en ~30-60 segundos.
+URL: `https://project-ax22f.vercel.app`
 
 ## Pendientes / próximos pasos sugeridos
 
