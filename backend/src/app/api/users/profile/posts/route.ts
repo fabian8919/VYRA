@@ -1,24 +1,22 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-// Forzar runtime Node.js para evitar 404 en rutas dinámicas en Vercel
+// Forzar runtime Node.js para evitar 404 en Vercel
 export const runtime = "nodejs";
 
 /**
- * GET /api/users/[id]/posts
+ * GET /api/users/profile/posts?id=<userId>
  *
  * Lista los posts públicos de un usuario por su ID con sus imágenes.
  * No requiere autenticación.
  */
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
 
   if (!id) {
     return NextResponse.json(
-      { error: "ID de usuario requerido" },
+      { error: "ID de usuario requerido (query param 'id')" },
       { status: 400 }
     );
   }

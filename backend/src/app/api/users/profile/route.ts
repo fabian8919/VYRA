@@ -1,24 +1,22 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-// Forzar runtime Node.js para evitar 404 en rutas dinámicas en Vercel
+// Forzar runtime Node.js para evitar 404 en Vercel
 export const runtime = "nodejs";
 
 /**
- * GET /api/users/[id]
+ * GET /api/users/profile?id=<userId>
  *
  * Devuelve el perfil público de un usuario por su ID.
  * No requiere autenticación.
  */
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
 
   if (!id) {
     return NextResponse.json(
-      { error: "ID de usuario requerido" },
+      { error: "ID de usuario requerido (query param 'id')" },
       { status: 400 }
     );
   }
@@ -39,12 +37,12 @@ export async function GET(
     );
   }
 
-  // 2. Obtener datos de auth.users (email, full_name, created_at)
+  // 2. Obtener datos de auth.users
   const { data: authUser, error: authError } = await adminClient.auth.admin.getUserById(id);
 
   if (authError) {
     // eslint-disable-next-line no-console
-    console.log("[GET /api/users/:id] auth error:", authError.message);
+    console.log("[GET /api/users/profile] auth error:", authError.message);
   }
 
   const user = authUser?.user;
@@ -57,7 +55,7 @@ export async function GET(
 
   if (countError) {
     // eslint-disable-next-line no-console
-    console.log("[GET /api/users/:id] count error:", countError.message);
+    console.log("[GET /api/users/profile] count error:", countError.message);
   }
 
   const response = {
