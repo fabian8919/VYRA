@@ -10,6 +10,18 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export async function GET(request: NextRequest) {
   const id = request.nextUrl.searchParams.get("id");
 
+  // Debug: si viene ?debug=1 devolvemos info de parsing
+  if (request.nextUrl.searchParams.get("debug") === "1") {
+    return NextResponse.json({
+      debug: true,
+      id,
+      url: request.url,
+      nextUrl: request.nextUrl.toString(),
+      nextUrlSearch: request.nextUrl.search,
+      searchParams: Object.fromEntries(request.nextUrl.searchParams.entries()),
+    });
+  }
+
   // ── Perfil público de otro usuario ──
   if (id) {
     const adminClient = createAdminClient();
