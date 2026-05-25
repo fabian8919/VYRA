@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { validateToken, getBearerToken } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -9,9 +9,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * Query param opcional: ?userId=xxx
  * Si se proporciona, devuelve los posts públicos de ese usuario (sin requerir auth).
  */
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const userIdParam = searchParams.get("userId");
+export async function GET(request: NextRequest) {
+  const userIdParam = request.nextUrl.searchParams.get("userId");
 
   let targetUserId: string;
 

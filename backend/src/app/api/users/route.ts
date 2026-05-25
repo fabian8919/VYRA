@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -7,9 +7,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * - Sin query params: lista usuarios (requiere autenticación).
  * - Con ?id=xxx: devuelve perfil público de ese usuario (no requiere auth).
  */
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
+export async function GET(request: NextRequest) {
+  const id = request.nextUrl.searchParams.get("id");
 
   // ── Perfil público de otro usuario ──
   if (id) {
